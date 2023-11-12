@@ -72,7 +72,7 @@ const LoginPage: React.FC = () => {
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
           <div className="bg-white p-12 rounded">
             <h2 className="text-3xl font-bold mb-1">License</h2>
-            <p className="text-gray-700 mb-5 text-xs">Enter license ID and key:</p>
+            <p className="text-gray-700 mb-10 text-xs">Enter license ID and key:</p>
             <div className="mb-4">
               <label className="block text-gray-700 font-bold">License ID</label>
               <input

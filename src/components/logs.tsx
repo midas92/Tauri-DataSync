@@ -1,18 +1,18 @@
 import React from "react";
 import Image from "next/image";
-import SettingContent from "./settingcontent";
+import Logscontent from "./logscontent";
 import Header from "./header";
 import Navbar from "./navbar";
-const Settings: React.FC = () => {
+const Logs: React.FC = () => {
   return (
     <div className="flex">
       <Navbar />
       <div className="w-4/5 bg-gray-200 h-screen">
         <Header />
-        <SettingContent />
+        <Logscontent />
       </div>
     </div>
   );
 };
 
-export default Settings;
+export default Logs;
