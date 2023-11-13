@@ -1,9 +1,9 @@
 "use client";
 import * as React from 'react';
 import Stack from '@mui/material/Stack';
-import Button from '@mui/material/Button';
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert, { AlertProps } from '@mui/material/Alert';
+
 
 const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(
   props,
@@ -25,12 +25,39 @@ export default function CustomizedSnackbars({
     <Stack spacing={2} sx={{ width: '100%' }}>
       <Snackbar
         open={showNotification}
-        autoHideDuration={6000}
+        autoHideDuration={2000}
         onClose={onCloseNotification}
         anchorOrigin={{ vertical: 'top', horizontal: 'right' }} // Positioning the snackbar on the top right corner
       >
-        <Alert onClose={onCloseNotification} severity="success" sx={{ width: '30vw', fontSize: '1.2rem', padding: '1rem' }}>
-          This is a success message!
+        <Alert onClose={onCloseNotification} iconMapping={{
+            error: (
+              <div
+                style={{
+                  marginTop: "9px",
+                  width: '40px',
+                  height: '40px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  backgroundColor: 'white',
+                }}
+              >
+               <div style={{
+                  width: '25px',
+                  height: '25px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  borderRadius: '50%',
+                  backgroundColor: '#149064',
+                  color:'white'
+                }}>&#10004;</div>
+              </div>
+            ),
+          }} severity="error" sx={{ width: '30vw', fontSize: '1.2rem', padding: '1rem',borderLeft: '4px solid #149064', backgroundColor: '#F6FBF9',color: 'black',}} >
+          <span style={{ fontWeight: 'bold' }}>Logged in</span>
+          <br />
+          <span style={{ fontSize: '0.9rem', color: 'grey' }}>You are logged in successfully</span>
         </Alert>
       </Snackbar>
     </Stack>

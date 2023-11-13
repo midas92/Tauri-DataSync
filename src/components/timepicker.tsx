@@ -12,7 +12,7 @@ export default function TimePickerViews() {
         components={['MobileTimePicker', 'MobileTimePicker', 'MobileTimePicker']}
       >
         <DemoItem>
-          <TimePicker views={['hours', 'minutes']} />
+          <TimePicker views={['hours', 'minutes']} className='bg-white'/>
         </DemoItem>
       </DemoContainer>
     </LocalizationProvider>

@@ -19,7 +19,7 @@ const Setting: React.FC = () => {
               <p className="text-gray-700 mb-2 text-xs">path:</p>
               <div className="self-stretch bg-white h-14 flex flex-row items-center justify-center py-0 px-4 box-border gap-[10px] text-base">
                 <input
-                  className="flex-1 relative p-2.5"
+                  className="flex-1 relative p-2.5  bg-white"
                   placeholder="C:\User\AppData\Config.txt"
                   type="text"
                 />
