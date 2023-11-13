@@ -22,6 +22,7 @@ export default function SelectLabels() {
           value={age}
           onChange={handleChange}
           defaultValue={"d"}
+          className="bg-white"
         >
           <MenuItem value={"d"}>Daily</MenuItem>
           <MenuItem value={"w"}>Weekly</MenuItem>

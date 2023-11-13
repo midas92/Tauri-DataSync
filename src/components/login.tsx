@@ -69,7 +69,7 @@ const LoginPage: React.FC = () => {
           width={50}
           height={50}
         />
-        <div className="w-full  ml-[60vw] mr-[13vw] py-8 px-4 sm:px-8">
+        <div className="w-full  ml-[60vw] mr-[13vw] py-8 px-4 sm:px-8 text-black">
           <div className="rounded-lg bg-gray-100 w-20 h-20 mx-auto flex items-center justify-center">
             <Image
               className="w-12 h-12"
