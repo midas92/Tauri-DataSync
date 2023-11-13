@@ -5,7 +5,7 @@ import SelectInput from "./select"
 import TimePicker from "./timepicker";
 const Setting: React.FC = () => {
   return (
-    <div className="flex-grow bg-white p-4 h-[80vh] rounded-tl-xl">
+    <div className="flex-grow bg-white p-4 h-[80vh] rounded-tl-xl text-black">
       {/* Content for the second div */}
       <div className="flex-grow bg-white p-6">
         <h1 className="text-4xl font-bold">Settings</h1>

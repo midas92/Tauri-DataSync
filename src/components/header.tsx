@@ -1,7 +1,7 @@
 import React from "react";
 const Header: React.FC = () => {
   return (
-        <div className="m-2 p-2 h-160 bg-white-100 flex justify-end items-center pr-4">
+        <div className="m-2 p-2 h-160 bg-gray-100 flex justify-end items-center pr-4">
           <div className="m-4 p-2 h-300">
             <span className="m-2 p-2 text-[#190482] ">
               Last sync: 5 min ago
