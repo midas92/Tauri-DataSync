@@ -1,7 +1,7 @@
 import React from "react";
 import Image from "next/image";
-import Togglebutton from "./toggle";
-const SettingContent: React.FC = () => {
+import Toggle from "./toggle";
+const Setting: React.FC = () => {
   return (
     <div className="flex-grow bg-gray-100 ml-8 p-4 rounded-tl-xl">
       {/* Content for the second div */}
@@ -38,7 +38,7 @@ const SettingContent: React.FC = () => {
                   </p>
                 </div>
                 <div className="">
-                  <Togglebutton />
+                  <Toggle />
                 </div>
               </div>
 
@@ -75,4 +75,4 @@ const SettingContent: React.FC = () => {
   );
 };
 
-export default SettingContent;
+export default Setting;

@@ -2,18 +2,20 @@
 import * as React from "react";
 import { useState } from "react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 const LoginPage: React.FC = () => {
   const [showModal, setShowModal] = useState(false);
   const [licenseId, setLicenseId] = useState("");
   const [licenseKey, setLicenseKey] = useState("");
-
+  const router = useRouter();
   const handleLogin = () => {
     setShowModal(true);
   };
 
   const handleModalClose = () => {
     setShowModal(false);
+    router.push('/setting/setting')
     setLicenseId("");
     setLicenseKey("");
   };
@@ -36,7 +38,7 @@ const LoginPage: React.FC = () => {
           height={500}
         />
       </div>
-      <div className="w-1/2 flex flex-col items-center justify-center">
+      <div className="w-1/2 flex flex-col items-center justify-center bg-white text-black">
         <div className="items-center justify-center">
           <div className="mb-4 flex justify-center items-center">
             <img
@@ -47,7 +49,7 @@ const LoginPage: React.FC = () => {
           </div>
           <form className="w-full">
             <div className="mb-4">
-              <div className="text-4xl flex justify-center items-center">Welcome!</div>
+              <div className="text-4xl flex justify-center items-center text-black">Welcome!</div>
               <div className="text-sm text-gray-400 flex justify-center items-center">Enter your email address to login</div>
             </div>
             <div className="mb-4">
@@ -69,7 +71,7 @@ const LoginPage: React.FC = () => {
       </div>
 
       {showModal && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-80 text-black">
           <div className="bg-white p-12 rounded">
             <h2 className="text-3xl font-bold mb-1">License</h2>
             <p className="text-gray-700 mb-10 text-xs">Enter license ID and key:</p>
