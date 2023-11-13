@@ -2,6 +2,8 @@
 import * as React from "react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Success from "./notification/success";
+import Failed from "./notification/failed";
 import Image from "next/image";
 
 const LoginPage: React.FC = () => {
@@ -12,10 +14,23 @@ const LoginPage: React.FC = () => {
   const handleLogin = () => {
     setShowModal(true);
   };
+  const showNotification = (state:string) => {
+    if(state==="success") {
+      setShowNotificationOfSuccess(true);
+    }
+    else if(state==="failed"){
+      setShowNotificationOfFailed(true);
+    } else {
+      return false;
+    }
 
+  }
   const handleModalClose = () => {
     setShowModal(false);
-    router.push("/setting/setting");
+    showNotification("success");
+    setTimeout(() => {
+      router.push("/setting/setting"); // Replace '/setting/setting' with your actual next page URL
+    }, 3000);
     setLicenseId("");
     setLicenseKey("");
   };
@@ -24,6 +39,7 @@ const LoginPage: React.FC = () => {
     // Handle license submission logic here
     console.log("License ID:", licenseId);
     console.log("License Key:", licenseKey);
+
     handleModalClose();
   };
 
@@ -31,6 +47,16 @@ const LoginPage: React.FC = () => {
     if (event.target === event.currentTarget) {
       setShowModal(false);
     }
+  };
+
+  const [showNotificationOfSuccess, setShowNotificationOfSuccess] = React.useState(false);
+  const handleCloseNotificationOfSuccess = () => {
+    setShowNotificationOfSuccess(false);
+  };
+
+  const [showNotificationOfFailed, setShowNotificationOfFailed] = React.useState(false);
+  const handleCloseNotificationOfFailed = () => {
+    setShowNotificationOfFailed(false);
   };
 
   return (
@@ -43,12 +69,18 @@ const LoginPage: React.FC = () => {
           width={50}
           height={50}
         />
-        <div className="w-full max-w-xs mx-auto ml-[60vw] mr-[13vw] py-8 px-4 sm:px-8">
+        <div className="w-full  ml-[60vw] mr-[13vw] py-8 px-4 sm:px-8">
           <div className="rounded-lg bg-gray-100 w-20 h-20 mx-auto flex items-center justify-center">
-            <Image className="w-12 h-12" alt="" src="/user.svg"  width={50} height={50}/>
+            <Image
+              className="w-12 h-12"
+              alt=""
+              src="/user.svg"
+              width={50}
+              height={50}
+            />
           </div>
-          <div className="mt-8 text-center text-1xl">
-            <h2 className="text-3xl font-bold">Welcome!</h2>
+          <div className="mt-8 text-center text-4xl ">
+            <h2 className="text-7xl font-bold">Welcome!</h2>
             <p className="mt-2 text-base text-opacity-64">
               Enter your email address to login
             </p>
@@ -70,6 +102,14 @@ const LoginPage: React.FC = () => {
           </form>
         </div>
       </div>
+      <Success
+        showNotification={showNotificationOfSuccess}
+        onCloseNotification={handleCloseNotificationOfSuccess}
+      />
+      <Failed
+        showNotification={showNotificationOfFailed}
+        onCloseNotification={handleCloseNotificationOfFailed}
+      />
       {showModal && (
         <div
           className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-80 text-black"
