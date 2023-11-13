@@ -6,7 +6,7 @@ export default ({children}:{children:React.ReactNode}) => {
   return (
     <div className="flex">
       <Navbar />
-      <div className="w-4/5 bg-gray-200 h-screen">
+      <div className="w-4/5 bg-gray-50 h-screen">
         <Header />
         {children}
       </div>

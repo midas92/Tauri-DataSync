@@ -1,7 +1,6 @@
 "use client";
 import * as React from "react";
 import { useState } from "react";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
 
 const LoginPage: React.FC = () => {
@@ -15,7 +14,7 @@ const LoginPage: React.FC = () => {
 
   const handleModalClose = () => {
     setShowModal(false);
-    router.push('/setting/setting')
+    router.push("/setting/setting");
     setLicenseId("");
     setLicenseKey("");
   };
@@ -28,43 +27,36 @@ const LoginPage: React.FC = () => {
   };
 
   return (
-    <div className="flex h-screen w-screen overflow-hidden">
-      <div className="w-1/2">
-        <Image
+    <div className="relative bg-white w-full min-h-screen overflow-hidden text-left text-base text-midnightblue font-roboto">
+      <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center">
+        <img
+          className="absolute top-0 left-0 right-auto bottom-auto rounded-tl-none rounded-tr-xl rounded-br-xl rounded-bl-none w-[50vw] h-full object-cover"
+          alt=""
           src="/image.png"
-          alt="Image"
-          layout="responsive"
-          width={500}
-          height={500}
         />
-      </div>
-      <div className="w-1/2 flex flex-col items-center justify-center bg-white text-black">
-        <div className="items-center justify-center">
-          <div className="mb-4 flex justify-center items-center">
-            <img
-              src="/avatar.png"
-              alt="Avatar"
-              className="w-24 h-24 rounded-md"
-            />
+        <div className="w-full max-w-xs mx-auto ml-[60vw] mr-[13vw] py-8 px-4 sm:px-8">
+          <div className="rounded-lg bg-gray-100 w-20 h-20 mx-auto flex items-center justify-center">
+            <img className="w-12 h-12" alt="" src="/user.svg" />
           </div>
-          <form className="w-full">
-            <div className="mb-4">
-              <div className="text-4xl flex justify-center items-center text-black">Welcome!</div>
-              <div className="text-sm text-gray-400 flex justify-center items-center">Enter your email address to login</div>
-            </div>
-            <div className="mb-4">
-              <input
-                type="email"
-                placeholder="Email Address"
-                className="border border-gray-300 px-4 py-2 w-full"
-              />
-            </div>
+          <div className="mt-8 text-center text-1xl">
+            <h2 className="text-3xl font-bold">Welcome!</h2>
+            <p className="mt-2 text-base text-opacity-64">
+              Enter your email address to login
+            </p>
+          </div>
+          <form className="mt-8">
+            <input
+              className="rounded bg-gray-100 w-full py-2 px-5 mb-5 "
+              placeholder="Email address"
+              type="email"
+            />
+
             <button
-              type="button"
-              className="bg-blue-500 text-white px-4 py-2 rounded w-full"
+              className="bg-blue-800  rounded w-full py-2 px-5 text-white mb-5"
               onClick={handleLogin}
+              type="button"
             >
-              Login
+              Log in
             </button>
           </form>
         </div>
@@ -74,9 +66,13 @@ const LoginPage: React.FC = () => {
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-80 text-black">
           <div className="bg-white p-12 rounded">
             <h2 className="text-3xl font-bold mb-1">License</h2>
-            <p className="text-gray-700 mb-10 text-xs">Enter license ID and key:</p>
+            <p className="text-gray-700 mb-10 text-xs">
+              Enter license ID and key:
+            </p>
             <div className="mb-4">
-              <label className="block text-gray-700 font-bold">License ID</label>
+              <label className="block text-gray-700 font-bold">
+                License ID
+              </label>
               <input
                 type="text"
                 placeholder="Enter ID"
@@ -86,7 +82,9 @@ const LoginPage: React.FC = () => {
               />
             </div>
             <div className="mb-4">
-              <label className="block text-gray-700 font-bold">License Key</label>
+              <label className="block text-gray-700 font-bold">
+                License Key
+              </label>
               <input
                 type="text"
                 placeholder="Enter Key"
@@ -96,13 +94,13 @@ const LoginPage: React.FC = () => {
               />
             </div>
             <div className=" flex justify-center items-center">
-            <button
-              type="button"
-              className="bg-blue-500 text-white px-12 py-2 rounded"
-              onClick={handleLicenseSubmit}
-            >
-              Enter
-            </button>
+              <button
+                type="button"
+                className="bg-blue-500 text-white px-12 py-2 rounded"
+                onClick={handleLicenseSubmit}
+              >
+                Enter
+              </button>
             </div>
           </div>
         </div>
