@@ -2,6 +2,7 @@
 import * as React from "react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 const LoginPage: React.FC = () => {
   const [showModal, setShowModal] = useState(false);
@@ -35,14 +36,16 @@ const LoginPage: React.FC = () => {
   return (
     <div className="relative bg-white w-full min-h-screen overflow-hidden text-left text-base text-midnightblue font-roboto">
       <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center">
-        <img
+        <Image
           className="absolute top-0 left-0 right-auto bottom-auto rounded-tl-none rounded-tr-xl rounded-br-xl rounded-bl-none w-[50vw] h-full object-cover"
           alt=""
           src="/image.png"
+          width={50}
+          height={50}
         />
         <div className="w-full max-w-xs mx-auto ml-[60vw] mr-[13vw] py-8 px-4 sm:px-8">
           <div className="rounded-lg bg-gray-100 w-20 h-20 mx-auto flex items-center justify-center">
-            <img className="w-12 h-12" alt="" src="/user.svg" />
+            <Image className="w-12 h-12" alt="" src="/user.svg"  width={50} height={50}/>
           </div>
           <div className="mt-8 text-center text-1xl">
             <h2 className="text-3xl font-bold">Welcome!</h2>
