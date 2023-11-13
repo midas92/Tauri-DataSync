@@ -26,6 +26,12 @@ const LoginPage: React.FC = () => {
     handleModalClose();
   };
 
+  const handleModalOverlayClick = (event: React.MouseEvent<HTMLDivElement>) => {
+    if (event.target === event.currentTarget) {
+      setShowModal(false);
+    }
+  };
+
   return (
     <div className="relative bg-white w-full min-h-screen overflow-hidden text-left text-base text-midnightblue font-roboto">
       <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center">
@@ -63,10 +69,10 @@ const LoginPage: React.FC = () => {
       </div>
 
       {showModal && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-80 text-black">
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-80 text-black" onClick={handleModalOverlayClick} >
           <div className="bg-white p-12 rounded">
             <h2 className="text-3xl font-bold mb-1">License</h2>
-            <p className="text-gray-700 mb-10 text-xs">
+            <p className="text-gray-700 mb-6 text-xs">
               Enter license ID and key:
             </p>
             <div className="mb-4">
@@ -81,7 +87,7 @@ const LoginPage: React.FC = () => {
                 onChange={(e) => setLicenseId(e.target.value)}
               />
             </div>
-            <div className="mb-4">
+            <div className="mb-12">
               <label className="block text-gray-700 font-bold">
                 License Key
               </label>
@@ -93,10 +99,10 @@ const LoginPage: React.FC = () => {
                 onChange={(e) => setLicenseKey(e.target.value)}
               />
             </div>
-            <div className=" flex justify-center items-center">
+            <div className="mb-12">
               <button
                 type="button"
-                className="bg-blue-500 text-white px-12 py-2 rounded"
+                className="bg-blue-500 text-white w-full px-12 py-2 rounded"
                 onClick={handleLicenseSubmit}
               >
                 Enter
