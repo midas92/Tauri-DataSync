@@ -47,7 +47,7 @@ const Setting: React.FC = () => {
 
               <div className="flex flex-row">
                 <div className=" w-1/2">
-                  <p className="text-gray-700 ml-2 mb-2 text-xs">Sync Period:</p>
+                  <p className="text-gray-700 ml-2 mr-2 mb-2 text-xs">Sync Period:</p>
                   <SelectInput />
                 </div>
                 <div className=" w-1/2 pl-8 pr-4">

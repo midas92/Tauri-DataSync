@@ -15,14 +15,14 @@ export default function SelectLabels() {
 
   return (
     <div>
-      <FormControl sx={{ m: 1, minWidth: 300 }}>
+      <FormControl sx={{ m: 1, minWidth: 100,width:"15vw" }}>
         <Select
           labelId="demo-simple-select-helper-label"
           id="demo-simple-select-helper"
           value={age}
           onChange={handleChange}
           defaultValue={"d"}
-          className="bg-white"
+          className="bg-white w-[100%]"
         >
           <MenuItem value={"d"}>Daily</MenuItem>
           <MenuItem value={"w"}>Weekly</MenuItem>

@@ -28,9 +28,9 @@ const LoginPage: React.FC = () => {
   const handleModalClose = () => {
     setShowModal(false);
     showNotification("success");
-    // setTimeout(() => {
-    //   router.push("/setting/setting"); // Replace '/setting/setting' with your actual next page URL
-    // }, 3000);
+    setTimeout(() => {
+      router.push("/setting/setting"); // Replace '/setting/setting' with your actual next page URL
+    }, 3000);
     setLicenseId("");
     setLicenseKey("");
   };
