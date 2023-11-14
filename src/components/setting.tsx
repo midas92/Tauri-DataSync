@@ -23,9 +23,9 @@ const Setting: React.FC = () => {
                   placeholder="C:\User\AppData\Config.txt"
                   type="text"
                 />
-
                 <button className="rounded bg-gray-50 hover:text-white hover:bg-indigo-800 text-indigo-800 h-10 flex flex-row items-center justify-center py-0 px-4 box-border text-navy-100">
-                  <div className="relative">Change</div>
+                  <label htmlFor="files" className="btn">Browse Files</label>
+                  <input id="files" style={{display:'none'}} type="file"/>
                 </button>
               </div>
             </div>

@@ -16,9 +16,10 @@ const Navbar: React.FC = () => {
             <Link href={routes.setting} className=" p-4 text-2xl text-gray-500 text-left hover:bg-gray-200 hover:text-[#190482] rounded-lg mb-2">
               Settings
             </Link>
-            <Link href={routes.logs} className="p-4 text-2xl text-gray-500 text-left hover:bg-gray-200 hover:text-[#190482] rounded-lg">
+            <Link href={routes.logs} className="p-4 text-2xl text-gray-500 text-left hover:bg-gray-200 hover:text-[#190482] rounded-lg mb-2">
               Logs
             </Link>
+            <Link href={routes.login} className="p-4 text-2xl text-gray-500 text-left hover:bg-gray-200 hover:text-[#190482] rounded-lg">Logout</Link>
           </div>
         </div>
       </div>
