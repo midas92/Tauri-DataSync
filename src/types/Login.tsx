@@ -1,7 +1,5 @@
-interface LicenseStatus {
-    state: Boolean;
-  }
-
-export type {
-    LicenseStatus
+interface HandleLogin {
+  handleLogin: () => void;
 }
+
+export type { HandleLogin };

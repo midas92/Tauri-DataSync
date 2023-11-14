@@ -1,5 +1,5 @@
 import { LightMode } from "@mui/icons-material";
-import { LicenseStatus } from "@/types/Login";
+import { LicenseStatus } from "@/types/license";
 
 export default function Status(props: LicenseStatus) {
   return (
