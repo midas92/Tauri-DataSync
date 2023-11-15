@@ -4,5 +4,11 @@ interface LicenseModal {
 }
 interface LicenseStatus {
   state: boolean;
+  alert: AlertProps;
 }
-export type { LicenseModal, LicenseStatus };
+
+interface AlertProps {
+  warn: boolean;
+  message: string;
+}
+export type { LicenseModal, LicenseStatus, AlertProps };

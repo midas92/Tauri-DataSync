@@ -9,6 +9,8 @@ import LicenseModal from "@/components/license/modal";
 import Login from "@/components/login";
 import { routes } from "@/constants/router";
 
+
+
 export default function Home() {
   const [showModal, setShowModal] = useState(false);
   const [showNotificationOfSuccess, setShowNotificationOfSuccess] =
@@ -47,7 +49,7 @@ export default function Home() {
   return (
     <div className="relative bg-white w-full min-h-screen overflow-hidden text-left text-base text-midnightblue font-roboto">
       <Login handleLogin={handleLogin} />
-      <Licensebadge state={false} />
+      <Licensebadge state={false} alert={{warn:true, message:'license invalid'}}/>
       <Success
         showNotification={showNotificationOfSuccess}
         onCloseNotification={handleCloseNotificationOfSuccess}
