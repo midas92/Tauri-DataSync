@@ -39,17 +39,27 @@ export default function Home() {
   }, [checkLisence]);
 
   useEffect(() => {
-    // check useremail === email
-    // true router.push setting
-    //false notification
-    // setshow modal
+    if(userEmail === email){
+      setShowNotificationOfSuccess(true)
+      // message login success
+      router.push(routes.setting);
+    } else {
+      if(licensevalidate) {
+        // message login failed
+      setShowNotificationOfFailed(true)
+      } else {
+        setShowModal(true);
+      }
+    }
   }, [userEmail]);
 
   useEffect(() => {
     if (licensevalidate) {
-      // showtruemodal
+      setShowNotificationOfSuccess(true)
+      // message license valid
     } else {
-      //showfalsemodal
+      setShowNotificationOfFailed(true)
+      //message license invalid
     }
   }, [licensevalidate]);
 
