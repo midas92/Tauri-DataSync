@@ -1,6 +1,5 @@
 "use client";
-import * as React from "react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Success from "@/components/notification/success";
 import Failed from "@/components/notification/failed";
@@ -9,19 +8,33 @@ import LicenseModal from "@/components/license/modal";
 import Login from "@/components/login";
 import { routes } from "@/constants/router";
 
-
-
 export default function Home() {
   const [showModal, setShowModal] = useState(false);
   const [showNotificationOfSuccess, setShowNotificationOfSuccess] =
     useState(false);
   const [showNotificationOfFailed, setShowNotificationOfFailed] =
     useState(false);
+  const [licensevalidate, setLicensevalidate] = useState(false);
+  
 
   const router = useRouter();
 
+  const checkLisence = useCallback(async () => {
+    // const license = fetch('https://api.lemonsqueezy.com/v1/licenses/validate',{
+
+    // })
+    if (localStorage.getItem("aaa") === null) {
+      const license = localStorage.setItem("aaa", "asssss");
+    }
+    console.log(localStorage.getItem("aaa") )
+    setLicensevalidate(true);
+  }, []);
+
+  useEffect(()=>{
+    checkLisence();
+  },[checkLisence])
   const handleLogin = () => {
-    setShowModal(true);
+    ;
   };
 
   const handleLicenseSubmit = () => {
@@ -29,10 +42,10 @@ export default function Home() {
 
     setShowModal(false);
     // if (value === "success") {
-      setShowNotificationOfSuccess(true);
-      setTimeout(() => {
-        router.push(routes.setting);
-      }, 1000);
+    setShowNotificationOfSuccess(true);
+    setTimeout(() => {
+      router.push(routes.setting);
+    }, 1000);
     // } else if (value === "failed") {
     //   setShowNotificationOfFailed(true);
     // }
@@ -48,8 +61,11 @@ export default function Home() {
 
   return (
     <div className="relative bg-white w-full min-h-screen overflow-hidden text-left text-base text-midnightblue font-roboto">
-      <Login handleLogin={handleLogin} />
-      <Licensebadge state={false} alert={{warn:true, message:'license invalid'}}/>
+      <Login showModal={()=>setShowModal(true)}  licenseState={licensevalidate}   />
+      <Licensebadge
+        state={false}
+        alert={{ warn: true, message: "license invalid" }}
+      />
       <Success
         showNotification={showNotificationOfSuccess}
         onCloseNotification={handleCloseNotificationOfSuccess}

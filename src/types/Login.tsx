@@ -1,5 +1,6 @@
 interface HandleLogin {
-  handleLogin: () => void;
+  showModal: () => void;
+  licenseState:boolean;
 }
 
 export type { HandleLogin };

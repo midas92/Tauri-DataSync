@@ -1,13 +1,25 @@
 "use client";
 import * as React from "react";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
-import Success from "./notification/success";
-import Failed from "./notification/failed";
 import Image from "next/image";
 import { HandleLogin } from "@/types/login";
+import { useRouter } from "next/navigation";
+import { routes } from "@/constants/router";
+
 
 export default function Login (props:HandleLogin)  {
+  const router = useRouter();
+  const [email, setEmail] = useState('');
+  const submit = ()=>{
+    if(props.licenseState){
+      //add check email from validation value
+      router.push(routes.setting);
+    } else {
+      props.showModal()
+    }
+
+  }
+  
   return (
     <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center">
       <Image
@@ -38,11 +50,13 @@ export default function Login (props:HandleLogin)  {
             className="rounded-md bg-gray-100 w-full py-4 px-5 mb-5 xl:text-xl"
             placeholder="Email address"
             type="email"
+            value={email}
+            onChange={(e)=>setEmail(e.target.value)}
           />
 
           <button
             className="bg-blue-800  rounded-md w-full py-4 px-5 text-white mb-5 xl:text-xl"
-            onClick={props.handleLogin}
+            onClick={submit}
             type="button"
           >
             Log in
