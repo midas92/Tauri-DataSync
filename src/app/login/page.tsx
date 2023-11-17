@@ -9,46 +9,53 @@ import Login from "@/components/login";
 import { routes } from "@/constants/router";
 
 export default function Home() {
+  const [email, setEmail] = useState("");
+  const [userEmail, setUserEmail] = useState("a");
   const [showModal, setShowModal] = useState(false);
   const [showNotificationOfSuccess, setShowNotificationOfSuccess] =
     useState(false);
   const [showNotificationOfFailed, setShowNotificationOfFailed] =
     useState(false);
   const [licensevalidate, setLicensevalidate] = useState(false);
-  
 
   const router = useRouter();
 
   const checkLisence = useCallback(async () => {
-    // const license = fetch('https://api.lemonsqueezy.com/v1/licenses/validate',{
-
-    // })
-    if (localStorage.getItem("aaa") === null) {
-      const license = localStorage.setItem("aaa", "asssss");
+    let licenseKey = localStorage.getItem("licensekey");
+    let licenseId = localStorage.getItem("licenseid");
+    if (licenseKey !== null || licenseId !== null) {
+      // const license = fetch('https://api.lemonsqueezy.com/v1/licenses/validate',{
+      // })
+      //setlocalstorage  key, id
+      //setstate validstate
+      //setstate useremail
+    } else {
+      setLicensevalidate(false);
     }
-    console.log(localStorage.getItem("aaa") )
-    setLicensevalidate(true);
   }, []);
 
-  useEffect(()=>{
+  useEffect(() => {
     checkLisence();
-  },[checkLisence])
-  const handleLogin = () => {
-    ;
-  };
+  }, [checkLisence]);
+
+  useEffect(() => {
+    // check useremail === email
+    // true router.push setting
+    //false notification
+    // setshow modal
+  }, [userEmail]);
+
+  useEffect(() => {
+    if (licensevalidate) {
+      // showtruemodal
+    } else {
+      //showfalsemodal
+    }
+  }, [licensevalidate]);
 
   const handleLicenseSubmit = () => {
-    //validation?
-
+    checkLisence();
     setShowModal(false);
-    // if (value === "success") {
-    setShowNotificationOfSuccess(true);
-    setTimeout(() => {
-      router.push(routes.setting);
-    }, 1000);
-    // } else if (value === "failed") {
-    //   setShowNotificationOfFailed(true);
-    // }
   };
 
   const handleCloseNotificationOfSuccess = () => {
@@ -61,7 +68,10 @@ export default function Home() {
 
   return (
     <div className="relative bg-white w-full min-h-screen overflow-hidden text-left text-base text-midnightblue font-roboto">
-      <Login showModal={()=>setShowModal(true)}  licenseState={licensevalidate}   />
+      <Login
+        licenseState={licensevalidate}
+        getEmail={(e: string) => setEmail(e)}
+      />
       <Licensebadge
         state={false}
         alert={{ warn: true, message: "license invalid" }}

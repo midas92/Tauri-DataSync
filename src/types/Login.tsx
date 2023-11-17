@@ -1,6 +1,6 @@
 interface HandleLogin {
-  showModal: () => void;
   licenseState:boolean;
+  getEmail:(e:string)=>void;
 }
 
 export type { HandleLogin };

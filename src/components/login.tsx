@@ -3,23 +3,13 @@ import * as React from "react";
 import { useState } from "react";
 import Image from "next/image";
 import { HandleLogin } from "@/types/login";
-import { useRouter } from "next/navigation";
-import { routes } from "@/constants/router";
 
+export default function Login(props: HandleLogin) {
+  const [email, setEmail] = useState("");
+  const submit = () => {
+    props.getEmail(email);
+  };
 
-export default function Login (props:HandleLogin)  {
-  const router = useRouter();
-  const [email, setEmail] = useState('');
-  const submit = ()=>{
-    if(props.licenseState){
-      //add check email from validation value
-      router.push(routes.setting);
-    } else {
-      props.showModal()
-    }
-
-  }
-  
   return (
     <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center">
       <Image
@@ -51,7 +41,7 @@ export default function Login (props:HandleLogin)  {
             placeholder="Email address"
             type="email"
             value={email}
-            onChange={(e)=>setEmail(e.target.value)}
+            onChange={(e) => setEmail(e.target.value)}
           />
 
           <button
@@ -65,4 +55,4 @@ export default function Login (props:HandleLogin)  {
       </div>
     </div>
   );
-};
+}

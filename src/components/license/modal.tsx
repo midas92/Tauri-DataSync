@@ -9,6 +9,11 @@ export default function Modal(props: LicenseModal) {
       props.closeModal();
     }
   };
+  const submit = ()=> {
+    localStorage.setItem("licenseid",licenseId);
+    localStorage.setItem("licensekey",licenseKey);
+    props.handleLicenseSubmit();
+  }
   return (
     <div
       className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-80 text-black"
@@ -41,7 +46,7 @@ export default function Modal(props: LicenseModal) {
           <button
             type="button"
             className="bg-blue-800 text-white w-full px-12 py-2 rounded-md text-xl"
-            onClick={() => props.handleLicenseSubmit()}
+            onClick={submit}
           >
             Enter
           </button>
