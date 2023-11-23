@@ -1,5 +1,4 @@
 interface HandleLogin {
-  licenseState:boolean;
   getEmail:(e:string)=>void;
 }
 

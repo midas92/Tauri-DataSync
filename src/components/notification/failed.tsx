@@ -55,9 +55,9 @@ export default function CustomizedSnackbars({
               </div>
             ),
           }} severity="error" sx={{ width: '30vw', fontSize: '1.2rem', padding: '1rem',borderLeft: '4px solid #FF0000', backgroundColor: '#FDF7F7',color: 'black',}} >
-          <span style={{ fontWeight: 'bold' }}>Wrong ID or Key</span>
+          <span style={{ fontWeight: 'bold' }}>Wrong Email</span>
           <br />
-          <span style={{ fontSize: '0.9rem', color: 'grey' }}>License ID or license key is wrong, please try again</span>
+          <span style={{ fontSize: '0.9rem', color: 'grey' }}>Your Email is wrong, please try again</span>
         </Alert>
       </Snackbar>
     </Stack>
