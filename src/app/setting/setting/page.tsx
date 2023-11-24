@@ -1,8 +1,68 @@
+"use client";
 import React from "react";
+import Image from "next/image";
 import Toggle from "@/components/toggle";
-import SelectInput from "@/components/select"
+import SelectInput from "@/components/select";
 import TimePicker from "@/components/timepicker";
+import { useSession, signOut, signIn } from "next-auth/react";
+import googleIcon from "../../../../public/google.svg";
+import { redirect } from "next/navigation";
+import { open } from '@tauri-apps/api/dialog';
+
+
 export default function Home() {
+  const { data: session }: any = useSession({
+    required: true,
+    onUnauthenticated() {
+        redirect('/setting/auth')
+    },
+  });
+  const handleChange = async (e: any) => {
+    e.preventDefault();
+    const file = await open({
+      title:"Select Database file",
+      directory:false,
+      multiple: false,
+      filters: [{
+        name: 'Image',
+        extensions: ['png', 'jpeg']
+      }]
+    });
+
+    console.log('file',file)
+
+  };
+  const handleFiles = async (files: any) => {
+    const file = files[0];
+    console.log("file",file)
+
+    const metadata = {
+      name: file.name, // Set the desired title of the file
+    };
+
+    const body = new FormData();
+    body.append(
+      "metadata",
+      new Blob([JSON.stringify(metadata)], { type: "application/json" })
+    );
+    body.append("file", file);
+
+    try {
+      await fetch(
+        "https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart",
+        {
+          method: "POST",
+          body: body,
+          headers: {
+            Authorization: `Bearer ${session?.accessToken}`,
+          },
+        }
+      );
+      //show message
+    } catch (error) {
+      //show message
+    }
+  };
   return (
     <div className="flex-grow bg-white p-4 h-[80vh] rounded-tl-xl text-black">
       {/* Content for the second div */}
@@ -26,7 +86,7 @@ export default function Home() {
                   <label htmlFor="files" className="btn">
                     Browse Files
                   </label>
-                  <input id="files" style={{ display: "none" }} type="file" />
+                  <input id="files" style={{ display: "none" }} type="file" onChange={handleChange} />
                 </button>
               </div>
             </div>

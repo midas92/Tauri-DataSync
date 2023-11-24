@@ -69,7 +69,7 @@ export default function Home() {
       if (userEmail === email) {
         setShowNotificationOfSuccess(true);
         // message login success
-        router.push(routes.setting);
+        router.push(routes.auth);
       } else {
         if (licensevalidate) {
           setShowNotificationOfFailed(true);
