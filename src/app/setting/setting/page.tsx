@@ -7,34 +7,55 @@ import TimePicker from "@/components/timepicker";
 import { useSession, signOut, signIn } from "next-auth/react";
 import googleIcon from "../../../../public/google.svg";
 import { redirect } from "next/navigation";
-import { open } from '@tauri-apps/api/dialog';
-
+import { open } from "@tauri-apps/api/dialog";
+import { fs, invoke } from "@tauri-apps/api";
+import { isNull } from "lodash";
 
 export default function Home() {
   const { data: session }: any = useSession({
     required: true,
     onUnauthenticated() {
-        redirect('/setting/auth')
+      redirect("/setting/auth");
     },
   });
   const handleChange = async (e: any) => {
     e.preventDefault();
     const file = await open({
-      title:"Select Database file",
-      directory:false,
+      title: "Select Database file",
+      directory: false,
       multiple: false,
-      filters: [{
-        name: 'Image',
-        extensions: ['png', 'jpeg']
-      }]
+      filters: [
+        {
+          name: "Image",
+          extensions: ["db", "jpeg"],
+        },
+      ],
     });
-
-    console.log('file',file)
-
+    console.log('dddd')
+    const metadata = {
+      name: "dddd", // Set the desired title of the file
+    };
+    // console.log("file", file,session?.accessToken);
+    // console.log('blob',new Blob([JSON.stringify(metadata)], { type: "application/json" }))
+    if (!isNull(file)) {
+      let res : any = await invoke("google_drive_upload", {
+        path: file,
+        token: session?.accessToken,
+      });
+      let fileId = res?.id;
+      console.log(fileId);      
+      let res1: any = await invoke("google_drive_update_metadata",{
+        path: file,
+        token: session?.accessToken,
+        fileid:fileId,
+      })
+      console.log("res1",res1)
+    }
+    
   };
   const handleFiles = async (files: any) => {
     const file = files[0];
-    console.log("file",file)
+    console.log("file", file);
 
     const metadata = {
       name: file.name, // Set the desired title of the file
@@ -86,7 +107,12 @@ export default function Home() {
                   <label htmlFor="files" className="btn">
                     Browse Files
                   </label>
-                  <input id="files" style={{ display: "none" }} type="file" onChange={handleChange} />
+                  <input
+                    id="files"
+                    style={{ display: "none" }}
+                    type="file"
+                    onClick={handleChange}
+                  />
                 </button>
               </div>
             </div>

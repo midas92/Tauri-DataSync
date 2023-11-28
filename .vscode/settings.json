@@ -13,6 +13,8 @@
         "licensestate",
         "licensevalidate",
         "Licensevalidate",
-        "Lisence"
-    ]
+        "Lisence",
+        "newresponse"
+    ],
+    "editor.inlineSuggest.showToolbar": "onHover"
 }

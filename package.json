@@ -17,6 +17,7 @@
     "@tauri-apps/api": "^1.5.1",
     "dayjs": "^1.11.10",
     "googleapis": "^128.0.0",
+    "lodash": "^4.17.21",
     "next": "^14.0.2",
     "next-auth": "^4.24.5",
     "react": "^18",
