@@ -1,89 +1,106 @@
 "use client";
-import React from "react";
-import Image from "next/image";
+import React, { useState, useCallback, useEffect } from "react";
 import Toggle from "@/components/toggle";
 import SelectInput from "@/components/select";
 import TimePicker from "@/components/timepicker";
 import { useSession, signOut, signIn } from "next-auth/react";
-import googleIcon from "../../../../public/google.svg";
 import { redirect } from "next/navigation";
 import { open } from "@tauri-apps/api/dialog";
-import { fs, invoke } from "@tauri-apps/api";
-import { isNull } from "lodash";
+import { invoke } from "@tauri-apps/api";
+import { isEmpty, isNull } from "lodash";
 
-export default function Home() {
+export default function Home(props: any) {
   const { data: session }: any = useSession({
     required: true,
     onUnauthenticated() {
       redirect("/setting/auth");
     },
   });
+  const [filePath, setfilePath] = useState(
+    localStorage.getItem("filePath") || ""
+  );
+  let fileId = localStorage.getItem('fileId') || '';
+
   const handleChange = async (e: any) => {
     e.preventDefault();
-    const file = await open({
-      title: "Select Database file",
-      directory: false,
-      multiple: false,
-      filters: [
-        {
-          name: "Image",
-          extensions: ["db", "jpeg"],
-        },
-      ],
-    });
-    console.log('dddd')
-    const metadata = {
-      name: "dddd", // Set the desired title of the file
-    };
-    // console.log("file", file,session?.accessToken);
-    // console.log('blob',new Blob([JSON.stringify(metadata)], { type: "application/json" }))
-    if (!isNull(file)) {
-      let res : any = await invoke("google_drive_upload", {
-        path: file,
-        token: session?.accessToken,
+    console.log(session.accessToken, "dddddd");
+    if (isEmpty(filePath)) {
+      // if we don't have file path
+      const directory = await open({
+        title: "Select Database folder",
+        directory: true,
+        multiple: false,
       });
-      let fileId = res?.id;
-      console.log(fileId);      
-      let res1: any = await invoke("google_drive_update_metadata",{
-        path: file,
-        token: session?.accessToken,
-        fileid:fileId,
-      })
-      console.log("res1",res1)
-    }
-    
-  };
-  const handleFiles = async (files: any) => {
-    const file = files[0];
-    console.log("file", file);
-
-    const metadata = {
-      name: file.name, // Set the desired title of the file
-    };
-
-    const body = new FormData();
-    body.append(
-      "metadata",
-      new Blob([JSON.stringify(metadata)], { type: "application/json" })
-    );
-    body.append("file", file);
-
-    try {
-      await fetch(
-        "https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart",
-        {
-          method: "POST",
-          body: body,
-          headers: {
-            Authorization: `Bearer ${session?.accessToken}`,
-          },
+      if (!isNull(directory)) {
+        console.log("directory", directory);
+        // get fileId in google cloud
+        if(isNull(fileId)){
+          const res: any = await invoke("google_drive_search", {
+            token: session?.accessToken,
+          });
+          localStorage.setItem("fileId", res?.files[0]?.id);
+          fileId = res?.files[0]?.id;
         }
-      );
-      //show message
-    } catch (error) {
-      //show message
+        // download file on directory path
+        let response: any = await invoke("google_drive_download", {
+          path: directory.toString(),
+          token: session?.accessToken,
+          fileid:fileId,
+        });
+
+        setfilePath(directory.toString());
+      }
+    } else {
+      // if we have set file path.
+      const file = await open({
+        title: "Select Database file",
+        directory: false,
+        multiple: false,
+        filters: [
+          {
+            name: "Sqlite",
+            extensions: ["sqlite", "sqlite3", "db", "db3", "s3db", "sl3"],
+          },
+        ],
+      });
+      if (!isNull(file)) {
+        setfilePath(file.toString());
+        const fileMetadata = await getLastModifiedDate(file.toString());
+        localStorage.setItem("filePath", file.toString());
+        let res: any = await invoke("google_drive_upload", {
+          path: file,
+          token: session?.accessToken,
+        });
+        console.log("res", res);
+        localStorage.setItem("fileId", res?.id);
+        fileId = res?.id;
+        console.log("file uploaded");
+        let res1: any = await invoke("google_drive_update_metadata", {
+          path: file,
+          token: session?.accessToken,
+          fileid: fileId,
+          mtime: fileMetadata?.mtime,
+        });
+        console.log("res1", res1);
+      }
     }
   };
+
+  const getLastModifiedDate = async (path: string) => {
+    try {
+      const res = await fetch("/api/readfile", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ path }),
+      });
+      return res.json();
+    } catch (err) {
+      console.error("Error getting file status:", err);
+    }
+  };
+
   return (
     <div className="flex-grow bg-white p-4 h-[80vh] rounded-tl-xl text-black">
       {/* Content for the second div */}
@@ -100,8 +117,9 @@ export default function Home() {
               <div className="m-2 self-stretch bg-white h-14 flex flex-row items-center justify-center py-0 px-4 box-border gap-[10px] text-base">
                 <input
                   className="flex-1 relative p-2.5  bg-white"
-                  placeholder="C:\User\AppData\Config.txt"
+                  placeholder="Please select directory to sync cloud database"
                   type="text"
+                  defaultValue={filePath}
                 />
                 <button className="rounded bg-gray-50 hover:text-white hover:bg-indigo-800 text-indigo-800 h-10 flex flex-row items-center justify-center py-0 px-4 box-border text-navy-100">
                   <label htmlFor="files" className="btn">
