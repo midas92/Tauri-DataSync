@@ -16,6 +16,12 @@ export default function Home(props: any) {
       redirect("/setting/auth");
     },
   });
+  // useEffect(() => {
+  //   if (session?.error === "RefreshAccessTokenError") {
+  //     signIn(); // Force sign in to hopefully resolve error
+  //   }
+  // }, [session]);
+
   const [filePath, setfilePath] = useState(
     localStorage.getItem("filePath") || ""
   );
