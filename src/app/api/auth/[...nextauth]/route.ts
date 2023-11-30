@@ -31,15 +31,15 @@ async function refreshAccessToken(token : any) {
     });
 
     const refreshedTokens = await response.json();
-    console.log('refreshedtoken',refreshedTokens)
+    
     if (!response.ok) {
       throw refreshedTokens;
     }
-
+    console.log('refreshedtoken',refreshedTokens)
     return {
       ...token,
       accessToken: refreshedTokens.access_token,
-      accessTokenExpires: refreshedTokens.expires_at * 1000,
+      accessTokenExpires: Date.now() + refreshedTokens.expires_in * 1000,
       refreshToken: refreshedTokens.refresh_token ?? token.refreshToken, // Fall back to old refresh token
     };
   } catch (error) {

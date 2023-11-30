@@ -16,20 +16,15 @@ export default function Home(props: any) {
       redirect("/setting/auth");
     },
   });
-  // useEffect(() => {
-  //   if (session?.error === "RefreshAccessTokenError") {
-  //     signIn(); // Force sign in to hopefully resolve error
-  //   }
-  // }, [session]);
 
   const [filePath, setfilePath] = useState(
-    localStorage.getItem("filePath") || ""
+    // localStorage.getItem("filePath") || ""
+    ""
   );
   let fileId = localStorage.getItem('fileId') || '';
 
   const handleChange = async (e: any) => {
     e.preventDefault();
-    console.log(session.accessToken, "dddddd");
     if (isEmpty(filePath)) {
       // if we don't have file path
       const directory = await open({

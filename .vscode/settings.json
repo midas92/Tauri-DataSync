@@ -14,7 +14,8 @@
         "licensevalidate",
         "Licensevalidate",
         "Lisence",
-        "newresponse"
+        "newresponse",
+        "writeresult"
     ],
     "editor.inlineSuggest.showToolbar": "onHover"
 }
