@@ -21,11 +21,23 @@ export default function Home(props: any) {
     // localStorage.getItem("filePath") || ""
     ""
   );
-  let fileId = localStorage.getItem('fileId') || '';
-
+  let fileId = localStorage.getItem("fileId") || "";
+  useEffect(() => {
+    // get fileId in google cloud
+    const getfileid = async () => {
+      if (isEmpty(fileId)) {
+        const res: any = await invoke("google_drive_search", {
+          token: session?.accessToken,
+        });
+        localStorage.setItem("fileId", res?.files[0]?.id);
+        fileId = res?.files[0]?.id;
+      }
+    };
+    getfileid();
+  }, [session]);
   const handleChange = async (e: any) => {
     e.preventDefault();
-    if (isEmpty(filePath)) {
+    if (isEmpty(filePath) && !isEmpty(fileId)) {
       // if we don't have file path
       const directory = await open({
         title: "Select Database folder",
@@ -34,22 +46,16 @@ export default function Home(props: any) {
       });
       if (!isNull(directory)) {
         console.log("directory", directory);
-        // get fileId in google cloud
-        if(isNull(fileId)){
-          const res: any = await invoke("google_drive_search", {
-            token: session?.accessToken,
-          });
-          localStorage.setItem("fileId", res?.files[0]?.id);
-          fileId = res?.files[0]?.id;
-        }
         // download file on directory path
-        let response: any = await invoke("google_drive_download", {
+        await invoke("google_drive_download", {
           path: directory.toString(),
           token: session?.accessToken,
-          fileid:fileId,
+          fileid: fileId,
+          filepath:false,
         });
-
-        setfilePath(directory.toString());
+        const cloudFileInfo = await getGoogleDriveFileInfo();
+        const filename = cloudFileInfo.name.split('--');
+        setfilePath(directory+'/'+filename[0]);
       }
     } else {
       // if we have set file path.
@@ -66,23 +72,47 @@ export default function Home(props: any) {
       });
       if (!isNull(file)) {
         setfilePath(file.toString());
-        const fileMetadata = await getLastModifiedDate(file.toString());
-        localStorage.setItem("filePath", file.toString());
-        let res: any = await invoke("google_drive_upload", {
-          path: file,
-          token: session?.accessToken,
-        });
-        console.log("res", res);
-        localStorage.setItem("fileId", res?.id);
-        fileId = res?.id;
-        console.log("file uploaded");
-        let res1: any = await invoke("google_drive_update_metadata", {
-          path: file,
-          token: session?.accessToken,
-          fileid: fileId,
-          mtime: fileMetadata?.mtime,
-        });
-        console.log("res1", res1);
+          const fileMetadata = await getLastModifiedDate(file.toString());
+          localStorage.setItem("filePath", file.toString());
+         
+        if (isEmpty(fileId)) {
+          let res: any = await invoke("google_drive_upload", {
+            path: file,
+            token: session?.accessToken,
+          });
+          console.log("res", res);
+          localStorage.setItem("fileId", res?.id);
+          fileId = res?.id;
+          console.log("file uploaded");
+          
+        } else {
+          const cloudFileInfo = await getGoogleDriveFileInfo();
+          const filename = cloudFileInfo.name.split('--');
+
+          if(fileMetadata.mtimeMs>filename[1]){ //upload
+            let res: any = await invoke("google_drive_update_content", {
+              path: file,
+              token: session?.accessToken,
+              fileid:fileId
+            });
+            console.log("update_content", res);
+            let res1: any = await invoke("google_drive_update_metadata", {
+              path: file,
+              token: session?.accessToken,
+              fileid: fileId,
+              mtime: fileMetadata?.mtimeMs,
+            });
+            console.log("res1", res1);
+          } else { // download
+
+            await invoke("google_drive_download", {
+              path: file.toString(),
+              token: session?.accessToken,
+              fileid: fileId,
+              filepath:true,
+            });
+          }
+        }
       }
     }
   };
@@ -97,6 +127,23 @@ export default function Home(props: any) {
         body: JSON.stringify({ path }),
       });
       return res.json();
+    } catch (err) {
+      console.error("Error getting file status:", err);
+    }
+  };
+  const getGoogleDriveFileInfo = async () => {
+    try {
+      const res = await fetch("https://www.googleapis.com/drive/v3/files/"+fileId, {
+        method: "GET",
+        headers: {
+          "Authorization": "Bearer " + session?.accessToken,
+        },
+      });
+      if(res.ok){
+        return res.json();
+      } else {
+        throw new Error(`HTTP error: ${res.status}`);
+      }
     } catch (err) {
       console.error("Error getting file status:", err);
     }
