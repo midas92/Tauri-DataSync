@@ -148,7 +148,7 @@ pub async fn google_drive_search(token: &str) -> Myresult<serde_json::Value> {
     let request = client
         .get(format!(
             "https://www.googleapis.com/drive/v3/files?q=fullText+contains+'{}'",
-            "bodycloud-20"
+            "bodycloud"
         ))
         .bearer_auth(token)
         .header("Content-Type", "application/json");

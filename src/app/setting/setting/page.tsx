@@ -7,7 +7,7 @@ import { useSession, signOut, signIn } from "next-auth/react";
 import { redirect } from "next/navigation";
 import { open } from "@tauri-apps/api/dialog";
 import { invoke } from "@tauri-apps/api";
-import { isEmpty, isNull } from "lodash";
+import { isEmpty, isNull, isUndefined } from "lodash";
 
 export default function Home(props: any) {
   const { data: session }: any = useSession({
@@ -18,8 +18,7 @@ export default function Home(props: any) {
   });
 
   const [filePath, setfilePath] = useState(
-    // localStorage.getItem("filePath") || ""
-    ""
+    localStorage.getItem("filePath") || ""
   );
   let fileId = localStorage.getItem("fileId") || "";
   useEffect(() => {
@@ -29,8 +28,10 @@ export default function Home(props: any) {
         const res: any = await invoke("google_drive_search", {
           token: session?.accessToken,
         });
-        localStorage.setItem("fileId", res?.files[0]?.id);
-        fileId = res?.files[0]?.id;
+        if(!isUndefined(res?.files[0])){
+          localStorage.setItem("fileId", res?.files[0]?.id);
+          fileId = res?.files[0]?.id;
+        }
       }
     };
     getfileid();
@@ -74,8 +75,9 @@ export default function Home(props: any) {
         setfilePath(file.toString());
           const fileMetadata = await getLastModifiedDate(file.toString());
           localStorage.setItem("filePath", file.toString());
-         
+          console.log(fileMetadata,'fimemetadata')
         if (isEmpty(fileId)) {
+          console.log('upload')
           let res: any = await invoke("google_drive_upload", {
             path: file,
             token: session?.accessToken,
@@ -84,12 +86,20 @@ export default function Home(props: any) {
           localStorage.setItem("fileId", res?.id);
           fileId = res?.id;
           console.log("file uploaded");
-          
+          let res1: any = await invoke("google_drive_update_metadata", {
+            path: file,
+            token: session?.accessToken,
+            fileid: fileId,
+            mtime: parseInt(fileMetadata?.mtimeMS).toString(),
+          });
+          console.log("res1", res1);
         } else {
           const cloudFileInfo = await getGoogleDriveFileInfo();
           const filename = cloudFileInfo.name.split('--');
+          console.log('cloud',filename)
+          if(fileMetadata.mtimeMS>filename[1]){ //upload
+          console.log('upload update')
 
-          if(fileMetadata.mtimeMs>filename[1]){ //upload
             let res: any = await invoke("google_drive_update_content", {
               path: file,
               token: session?.accessToken,
@@ -100,11 +110,11 @@ export default function Home(props: any) {
               path: file,
               token: session?.accessToken,
               fileid: fileId,
-              mtime: fileMetadata?.mtimeMs,
+              mtime: parseInt(fileMetadata?.mtimeMS).toString(),
             });
             console.log("res1", res1);
           } else { // download
-
+            console.log('file download')
             await invoke("google_drive_download", {
               path: file.toString(),
               token: session?.accessToken,
