@@ -144,7 +144,6 @@ pub async fn google_drive_download(
 pub async fn google_drive_search(token: &str) -> Myresult<serde_json::Value> {
     // Create the request and attach the file to the body
     let client = reqwest::Client::new();
-
     let request = client
         .get(format!(
             "https://www.googleapis.com/drive/v3/files?q=fullText+contains+'{}'",
