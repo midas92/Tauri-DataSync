@@ -1,16 +1,23 @@
 "use client";
 import { invoke } from "@tauri-apps/api";
-import { useCallback, useEffect, useState, lazy, Suspense } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import Datatable from "@/components/datatable";
+import { Pagination } from "@mui/material";
 
 export default function Home() {
   const [data, setData] = useState<any>();
+  const [currentPage, setCurrentPage] = React.useState(1);
+  const [totallog, setTotallog] = useState(0);
+
   const getlogs = useCallback(async () => {
     console.log("lazy");
-    const logs = await invoke("get_all_log");
+    const logs = await invoke("get_log_pagination", {
+      currentPage: currentPage,
+    });
+    const total: number = await invoke("get_count_log");
     setData(logs);
-    console.log("logssss", logs);
-  }, []);
+    setTotallog(Math.ceil(total / 5));
+  }, [currentPage]);
   useEffect(() => {
     getlogs();
   }, [getlogs]);
@@ -21,8 +28,17 @@ export default function Home() {
       <div className="flex-grow bg-white p-6">
         <h1 className="text-4xl font-bold">Logs</h1>
         <div className="border-b-2 mt-4 mb-6"></div>
-        <div className="flex">
-          <Datatable datas={data} />
+        <div className="flex flex-col">
+          <Datatable datas={data} currentPage={currentPage} />
+          <div className="my-3 mr-0 inline float-right">
+            <Pagination
+              count={totallog}
+              color="primary"
+              page={currentPage}
+              onChange={(e, value) => setCurrentPage(value)}
+              style={{float:"inline-end"}}
+            />
+          </div>
         </div>
       </div>
     </div>

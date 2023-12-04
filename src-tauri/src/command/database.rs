@@ -88,15 +88,16 @@ pub fn insert_log(
 }
 
 #[tauri::command]
-pub fn get_all_log() -> Vec<Log> {
+pub fn get_log_pagination(current_page : i32) -> Vec<Log> {
+    let offset = (current_page -1)* 5;
     let db_path = get_db_path();
     let connection = Database::open(&db_path).unwrap();
     // let mut stmt = connection.prepare("SELECT * FROM log");
     let mut logs: Vec<Log> = Vec::new();
     connection
         .for_each(
-            "SELECT * FROM logs",
-            (),
+            "SELECT * FROM logs ORDER BY id DESC Limit ?, 5;",
+            offset,
             |id: i32,
              create_on: String,
              prev_on: String,
@@ -117,4 +118,13 @@ pub fn get_all_log() -> Vec<Log> {
         )
         .unwrap();
     return logs;
+}
+
+#[tauri::command]
+pub fn get_count_log() -> i32 {
+    let db_path = get_db_path();
+    let connection = Database::open(&db_path).unwrap();
+    // let mut stmt = connection.prepare("SELECT * FROM log");
+    let count: i32 = connection.collect("select count(*) from logs", ()).unwrap();
+    return count;
 }

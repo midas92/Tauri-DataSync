@@ -1,5 +1,6 @@
 interface Datas {
   datas: Array<Log>;
+  currentPage : number
 }
 
 interface Log {

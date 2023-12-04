@@ -80,7 +80,7 @@
       {
         "fullscreen": false,
         "height": 800,
-        "resizable": true,
+        "resizable": false,
         "title": "cloudsync",
         "width": 1200,
         "visible": false,
