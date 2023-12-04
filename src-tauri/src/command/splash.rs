@@ -1,5 +1,5 @@
 use tauri::Manager;
-use crate::command::sqlite;
+use crate::command::database;
 
 #[tauri::command]
 pub fn close_splashscreen(window: tauri::Window) {
@@ -7,7 +7,7 @@ pub fn close_splashscreen(window: tauri::Window) {
     if let Some(splashscreen) = window.get_window("splashscreen") {
         splashscreen.close().unwrap();
     }
-    sqlite::init();
+    database::init();
     // Show main window
     window.get_window("main").unwrap().show().unwrap();
 }

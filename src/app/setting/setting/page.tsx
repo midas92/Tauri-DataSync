@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import Toggle from "@/components/toggle";
 import SelectInput from "@/components/select";
 import TimePicker from "@/components/timepicker";
@@ -9,7 +9,57 @@ import { open } from "@tauri-apps/api/dialog";
 import { invoke } from "@tauri-apps/api";
 import { isEmpty, isNull, isUndefined } from "lodash";
 
-export default function Home(props: any) {
+export const getLastModifiedDate = async (path: string) => {
+  try {
+    const res = await fetch("/api/readfile", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ path }),
+    });
+    return res.json();
+  } catch (err) {
+    console.error("Error getting file status:", err);
+  }
+};
+
+export const getGoogleDriveFileInfo = async (fileId: string, session: any) => {
+  try {
+    const res = await fetch(
+      "https://www.googleapis.com/drive/v3/files/" + fileId,
+      {
+        method: "GET",
+        headers: {
+          Authorization: "Bearer " + session?.accessToken,
+        },
+      }
+    );
+    if (res.ok) {
+      return res.json();
+    } else {
+      throw new Error(`HTTP error: ${res.status}`);
+    }
+  } catch (err) {
+    console.error("Error getting file status:", err);
+  }
+};
+
+export const msToTimeString = (ms: number) => {
+  var date = new Date(ms);
+  var year = date.getFullYear();
+  var month = String(date.getMonth() + 1).padStart(2, "0");
+  var day = String(date.getDate()).padStart(2, "0");
+  var hours = String(date.getHours()).padStart(2, "0");
+  var minutes = String(date.getMinutes()).padStart(2, "0");
+  var seconds = String(date.getSeconds()).padStart(2, "0");
+
+  return (
+    year + ":" + month + ":" + day + " " + hours + ":" + minutes + ":" + seconds
+  );
+};
+
+export default function Home() {
   const { data: session }: any = useSession({
     required: true,
     onUnauthenticated() {
@@ -24,20 +74,24 @@ export default function Home(props: any) {
   useEffect(() => {
     // get fileId in google cloud
     const getfileid = async () => {
+      // await initDatabase()
       if (isEmpty(fileId)) {
         const res: any = await invoke("google_drive_search", {
           token: session?.accessToken,
         });
-        if(!isUndefined(res?.files[0])){
+        if (!isUndefined(res?.files[0])) {
           localStorage.setItem("fileId", res?.files[0]?.id);
           fileId = res?.files[0]?.id;
         }
       }
     };
     getfileid();
-  }, [session]);
+  }, []);
+
   const handleChange = async (e: any) => {
+    console.log("abc");
     e.preventDefault();
+    const nowLocalTime = msToTimeString(new Date().getTime());
     if (isEmpty(filePath) && !isEmpty(fileId)) {
       // if we don't have file path
       const directory = await open({
@@ -52,11 +106,23 @@ export default function Home(props: any) {
           path: directory.toString(),
           token: session?.accessToken,
           fileid: fileId,
-          filepath:false,
+          filepath: false,
         });
-        const cloudFileInfo = await getGoogleDriveFileInfo();
-        const filename = cloudFileInfo.name.split('--');
-        setfilePath(directory+'/'+filename[0]);
+
+        const cloudFileInfo = await getGoogleDriveFileInfo(fileId, session);
+        const filename = cloudFileInfo.name.split("--");
+        setfilePath(directory + "\\" + filename[0]);
+        localStorage.setItem("filePath", directory + "\\" + filename[0]);
+        const cloudModified = msToTimeString(parseInt(filename[1]));
+        await invoke("insert_log", {
+          drive: "google",
+          actionType: "manual",
+          create: nowLocalTime,
+          prev: cloudModified,
+          upload: "download",
+          path: directory + "\\" + filename[0],
+        });
+        console.log("create log to download");
       }
     } else {
       // if we have set file path.
@@ -73,11 +139,11 @@ export default function Home(props: any) {
       });
       if (!isNull(file)) {
         setfilePath(file.toString());
-          const fileMetadata = await getLastModifiedDate(file.toString());
-          localStorage.setItem("filePath", file.toString());
-          console.log(fileMetadata,'fimemetadata')
+        const fileMetadata = await getLastModifiedDate(file.toString());
+        localStorage.setItem("filePath", file.toString());
+        console.log(fileMetadata, "fimemetadata");
         if (isEmpty(fileId)) {
-          console.log('upload')
+          console.log("upload");
           let res: any = await invoke("google_drive_upload", {
             path: file,
             token: session?.accessToken,
@@ -93,69 +159,73 @@ export default function Home(props: any) {
             mtime: parseInt(fileMetadata?.mtimeMS).toString(),
           });
           console.log("res1", res1);
+          setfilePath(file.toString());
+          invoke("insert_log", {
+            drive: "google",
+            actionType: "manual",
+            create: nowLocalTime,
+            prev: msToTimeString(parseInt(fileMetadata?.mtimeMS)),
+            upload: "upload",
+            path: file.toString(),
+          });
+          console.log("create log to upload");
         } else {
-          const cloudFileInfo = await getGoogleDriveFileInfo();
-          const filename = cloudFileInfo.name.split('--');
-          console.log('cloud',filename)
-          if(fileMetadata.mtimeMS>filename[1]){ //upload
-          console.log('upload update')
-
+          console.log("jijijijijijijijijij");
+          const fileMetadata = await getLastModifiedDate(filePath);
+          console.log(fileMetadata, "filemetadata");
+          const nowLocalTime = msToTimeString(new Date().getTime());
+          const cloudFileInfo = await getGoogleDriveFileInfo(fileId, session);
+          const filename = cloudFileInfo?.name.split("--");
+          console.log("cloud", filename);
+          const cloudModified = msToTimeString(parseInt(filename[1]));
+          if (fileMetadata.mtimeMS > filename[1]) {
+            //upload
+            console.log("upload update");
+            console.log("cloudModified", cloudModified);
             let res: any = await invoke("google_drive_update_content", {
-              path: file,
+              path: filePath,
               token: session?.accessToken,
-              fileid:fileId
+              fileid: fileId,
             });
             console.log("update_content", res);
+
             let res1: any = await invoke("google_drive_update_metadata", {
-              path: file,
+              path: filePath,
               token: session?.accessToken,
               fileid: fileId,
               mtime: parseInt(fileMetadata?.mtimeMS).toString(),
             });
             console.log("res1", res1);
-          } else { // download
-            console.log('file download')
+            invoke("insert_log", {
+              drive: "google",
+              actionType: "manual",
+              create: nowLocalTime,
+              prev: cloudModified,
+              upload: "upload",
+              path: file.toString(),
+            });
+            console.log("create log to upload");
+          } else {
+            // download
+            console.log("file download");
             await invoke("google_drive_download", {
               path: file.toString(),
               token: session?.accessToken,
               fileid: fileId,
-              filepath:true,
+              filepath: true,
             });
+            invoke("insert_log", {
+              drive: "google",
+              actionType: "manual",
+              create: nowLocalTime,
+              prev: cloudModified,
+              upload: "download",
+              path: file.toString(),
+            });
+            console.log("create log to download");
           }
         }
       }
-    }
-  };
-
-  const getLastModifiedDate = async (path: string) => {
-    try {
-      const res = await fetch("/api/readfile", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ path }),
-      });
-      return res.json();
-    } catch (err) {
-      console.error("Error getting file status:", err);
-    }
-  };
-  const getGoogleDriveFileInfo = async () => {
-    try {
-      const res = await fetch("https://www.googleapis.com/drive/v3/files/"+fileId, {
-        method: "GET",
-        headers: {
-          "Authorization": "Bearer " + session?.accessToken,
-        },
-      });
-      if(res.ok){
-        return res.json();
-      } else {
-        throw new Error(`HTTP error: ${res.status}`);
-      }
-    } catch (err) {
-      console.error("Error getting file status:", err);
     }
   };
 

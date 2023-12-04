@@ -109,7 +109,7 @@ pub async fn google_drive_download(
     path: &str,
     token: &str,
     fileid: &str,
-    filepath: bool,
+    filepath: bool,   // check whether directory path or filepath is
 ) -> Myresult<()> {
     // Create the request and attach the file to the body
     let client = reqwest::Client::new();

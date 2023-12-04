@@ -1,2 +1,2 @@
 pub mod splash;
-pub mod sqlite;
+pub mod database;

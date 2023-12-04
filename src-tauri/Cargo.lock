@@ -69,11 +69,11 @@ dependencies = [
  "dirs",
  "futures-util",
  "reqwest",
+ "rsqlite",
  "serde",
  "serde_json",
  "tauri",
  "tauri-build",
- "tauri-plugin-sqlite",
  "thiserror",
  "tokio",
  "tokio-util",
@@ -2463,6 +2463,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "rsqlite"
+version = "1.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "fb4fa21120fa9726860ae658534c1253d928e53fcf6aa36d342f35672518c76e"
+dependencies = [
+ "libc",
+ "sqlite3-sys",
+ "thiserror",
+]
+
+[[package]]
 name = "rustc-demangle"
 version = "0.1.23"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2810,20 +2821,10 @@ dependencies = [
 ]
 
 [[package]]
-name = "sqlite"
-version = "0.26.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3fb1a534c07ec276fbbe0e55a1c00814d8563da3a2f4d9d9d4c802bd1278db6a"
-dependencies = [
- "libc",
- "sqlite3-sys",
-]
-
-[[package]]
 name = "sqlite3-src"
-version = "0.3.0"
+version = "0.2.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a260b07ce75a0644c6f5891f34f46db9869e731838e95293469ab17999abcfa3"
+checksum = "46e0bc115b563b1ee6c665ef895b56bf488522f57d1c6571887547c57c8f5a88"
 dependencies = [
  "cc",
  "pkg-config",
@@ -2831,9 +2832,9 @@ dependencies = [
 
 [[package]]
 name = "sqlite3-sys"
-version = "0.13.0"
+version = "0.12.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "04d2f028faeb14352df7934b4771806f60d61ce61be1928ec92396d7492e2e54"
+checksum = "71fec807a1534bd13eeaaec396175d67c79bdc68df55e18a452726ec62a8fb08"
 dependencies = [
  "libc",
  "sqlite3-src",
@@ -3132,18 +3133,6 @@ dependencies = [
  "syn 1.0.109",
  "tauri-codegen",
  "tauri-utils",
-]
-
-[[package]]
-name = "tauri-plugin-sqlite"
-version = "0.1.0"
-source = "git+https://github.com/lzdyes/tauri-plugin-sqlite?tag=v0.1.1#3d09a5a963f96a06debe27b3e37d9337aca18dcc"
-dependencies = [
- "serde",
- "serde_json",
- "sqlite",
- "tauri",
- "thiserror",
 ]
 
 [[package]]

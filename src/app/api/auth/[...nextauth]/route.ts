@@ -35,7 +35,6 @@ async function refreshAccessToken(token : any) {
     if (!response.ok) {
       throw refreshedTokens;
     }
-    console.log('refreshedtoken',refreshedTokens)
     return {
       ...token,
       accessToken: refreshedTokens.access_token,
@@ -68,7 +67,6 @@ export const authOptions = {
   callbacks: {
     async jwt({ token, user, account } : any) {
       // Initial sign in
-      console.log(token, account)
       if (account && user) {
         return {
           accessToken: account.access_token,

@@ -24,8 +24,7 @@
     "next-auth": "^4.24.5",
     "react": "^18",
     "react-dom": "^18",
-    "styled": "^1.0.0",
-    "tauri-plugin-sqlite-api": "github:lzdyes/tauri-plugin-sqlite#v0.1.1"
+    "styled": "^1.0.0"
   },
   "devDependencies": {
     "@tauri-apps/cli": "^1.5.6",
