@@ -14,6 +14,17 @@ pub struct Log {
     path: String,
     prev_on: String,
 }
+#[derive(Debug, Serialize, Deserialize)]
+pub struct Sync {
+    id: i32,
+    status: bool,
+    detail: i32,
+    r#type: String,
+    file_path: String,
+    create_on: String,
+    file_id: String,
+}
+
 // Check if a database file exists, and create one if it does not.
 pub fn init() {
     if !db_file_exists() {
@@ -36,6 +47,21 @@ pub fn create_table() {
                 path text not null,
                 upload text not null
      )",
+            (),
+        )
+        .unwrap();
+    connection
+        .execute(
+            "CREATE TABLE if not exists sync (
+            id        INTEGER PRIMARY KEY AUTOINCREMENT
+                              NOT NULL,
+            type      TEXT    NOT NULL,
+            detail    INTEGER NOT NULL,
+            file_id    TEXT    NOT NULL,
+            file_path  TEXT    NOT NULL,
+            status INTEGER NOT NULL,
+            create_on TEXT    NOT NULL
+        )",
             (),
         )
         .unwrap();
@@ -67,6 +93,7 @@ fn get_db_path() -> String {
     home_dir.to_str().unwrap().to_string() + "/.config/cloudsync/database.sqlite"
 }
 
+// Inset the row in log table
 #[tauri::command]
 pub fn insert_log(
     drive: &str,
@@ -76,7 +103,6 @@ pub fn insert_log(
     upload: &str,
     path: &str,
 ) {
-    println!("hihihihi:{}:", path);
     let db_path = get_db_path();
     let connection = Database::open(&db_path).unwrap();
     connection
@@ -87,9 +113,10 @@ pub fn insert_log(
         .unwrap();
 }
 
+// Get the number of logs in log table
 #[tauri::command]
-pub fn get_log_pagination(current_page : i32) -> Vec<Log> {
-    let offset = (current_page -1)* 5;
+pub fn get_log_pagination(current_page: i32) -> Vec<Log> {
+    let offset = (current_page - 1) * 5;
     let db_path = get_db_path();
     let connection = Database::open(&db_path).unwrap();
     // let mut stmt = connection.prepare("SELECT * FROM log");
@@ -120,6 +147,7 @@ pub fn get_log_pagination(current_page : i32) -> Vec<Log> {
     return logs;
 }
 
+// Get the number of total logs in log table
 #[tauri::command]
 pub fn get_count_log() -> i32 {
     let db_path = get_db_path();
@@ -127,4 +155,82 @@ pub fn get_count_log() -> i32 {
     // let mut stmt = connection.prepare("SELECT * FROM log");
     let count: i32 = connection.collect("select count(*) from logs", ()).unwrap();
     return count;
+}
+
+// Insert the row in sync table
+#[tauri::command]
+pub fn insert_sync_info(
+    r#type: &str,
+    detail: i32,
+    file_id: &str,
+    file_path: &str,
+    create_on: &str,
+    status: bool,
+) {
+    let sync_status = match status {
+        true => 1,
+        false => 0,
+    };
+    let db_path = get_db_path();
+    let connection = Database::open(&db_path).unwrap();
+    connection
+        .execute(
+            "insert into sync(type, detail, file_id, file_path, create_on, status) values(?, ?, ?, ?, ?, ?)",
+            (r#type, detail, file_id, file_path, create_on, sync_status),
+        )
+        .unwrap();
+}
+
+// Get the last sync data in sync table
+#[tauri::command]
+pub fn get_sync() -> Vec<Sync> {
+    let db_path = get_db_path();
+    let connection = Database::open(&db_path).unwrap();
+    // let mut stmt = connection.prepare("SELECT * FROM log");
+    let mut data: Vec<Sync> = Vec::new();
+
+    connection
+        .for_each(
+            "select * from sync ORDER BY id DESC
+    LIMIT 1",
+            (),
+            |id: i32,
+             r#type: String,
+             detail: i32,
+             fild_id: String,
+             file_path: String,
+             status: i32,
+             create_on: String| {
+                let state: bool = if status == 1 { true } else { false };
+                data.push(Sync {
+                    id: id,
+                    status: state,
+                    detail: detail,
+                    r#type: r#type,
+                    create_on: create_on,
+                    file_id: fild_id,
+                    file_path: file_path,
+                });
+            },
+        )
+        .unwrap();
+    return data;
+}
+
+// Update create_on in sync table
+#[tauri::command]
+pub fn update_sync_create_on(
+    id: i32,
+    time: &str,
+) {
+    let db_path = get_db_path();
+    let connection = Database::open(&db_path).unwrap();
+    connection
+        .execute(
+            "UPDATE sync
+            SET create_on = ?
+            WHERE id = ?",
+            (time, id),
+        )
+        .unwrap();
 }

@@ -26,7 +26,7 @@ export default function Datatable(props: Datas) {
         </TableHead>
         <TableBody>
           {isNull(props.datas) || isUndefined(props.datas) ? (
-            <div>Loading ...</div>
+           <TableCell component="th" scope="row">Loading ...</TableCell> 
           ) : (
             props.datas.map((row) => {
               ++id;

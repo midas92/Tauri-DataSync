@@ -22,7 +22,7 @@ export default function Auth() {
       </p>
       <Button
         onClick={() => signIn("google", { callbackUrl: "/setting/setting" })}
-        className="text-lg w-auto"
+        className="text-lg w-auto "
         variant="contained"
         color="success"
         style={{

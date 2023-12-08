@@ -10,7 +10,6 @@ export default function Home() {
   const [totallog, setTotallog] = useState(0);
 
   const getlogs = useCallback(async () => {
-    console.log("lazy");
     const logs = await invoke("get_log_pagination", {
       currentPage: currentPage,
     });

@@ -1,16 +1,15 @@
 "use client";
 import * as React from "react";
-import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
-import FormHelperText from "@mui/material/FormHelperText";
 import FormControl from "@mui/material/FormControl";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
+import { SyncType } from "@/types/sync";
+import { syncTypes } from "@/constants/sync";
 
-export default function SelectLabels() {
-  const [age, setAge] = React.useState("");
+export default function SelectLabels(props : SyncType) {
 
   const handleChange = (event: SelectChangeEvent) => {
-    setAge(event.target.value);
+    props.settype(event.target.value);
   };
 
   return (
@@ -19,15 +18,17 @@ export default function SelectLabels() {
         <Select
           labelId="demo-simple-select-helper-label"
           id="demo-simple-select-helper"
-          value={age}
+          value={props.type}
           onChange={handleChange}
           defaultValue={"d"}
           className="bg-white w-[100%]"
+          disabled={props.status?false:true}
         >
-          <MenuItem value={"d"}>Daily</MenuItem>
-          <MenuItem value={"w"}>Weekly</MenuItem>
-          <MenuItem value={"m"}>Monthly</MenuItem>
-          <MenuItem value={"y"}>Yearly</MenuItem>
+          {
+            syncTypes.map((item, index)=>{
+              return <MenuItem value={item.value} key={`type-${index}`}>{item.type}</MenuItem>
+            })
+          }
         </Select>
       </FormControl>
     </div>

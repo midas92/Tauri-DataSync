@@ -1,13 +1,16 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import Toggle from "@/components/toggle";
 import SelectInput from "@/components/select";
-import TimePicker from "@/components/timepicker";
+import SelectDetail from "@/components/selectdetail";
 import { useSession, signOut, signIn } from "next-auth/react";
 import { redirect } from "next/navigation";
 import { open } from "@tauri-apps/api/dialog";
 import { invoke } from "@tauri-apps/api";
 import { isEmpty, isNull, isUndefined } from "lodash";
+import { syncTypes } from "@/constants/sync";
+import { Sync, SyncDataType } from "@/types/sync";
+import { SyncContext } from "@/app/setting/layout"
 
 export const getLastModifiedDate = async (path: string) => {
   try {
@@ -60,36 +63,45 @@ export const msToTimeString = (ms: number) => {
 };
 
 export default function Home() {
+  const {sync, setSync, intervalID} = useContext(SyncContext);
   const { data: session }: any = useSession({
     required: true,
     onUnauthenticated() {
       redirect("/setting/auth");
     },
   });
+  const [synctype, setSynctype] = useState("d");
+  const [detail, setDetail] = useState(0);
+  const [syncstatus, setSyncstatus] = useState(false);
 
+  const handleSyncType = (e: string) => {
+    setSynctype(e);
+    setDetail(0);
+  };
   const [filePath, setfilePath] = useState(
     localStorage.getItem("filePath") || ""
   );
   let fileId = localStorage.getItem("fileId") || "";
+
+  const getfileid = async () => {
+    if (isEmpty(fileId)) {
+      const res: any = await invoke("google_drive_search", {
+        token: session?.accessToken,
+      });
+      if (!isUndefined(res?.files[0])) {
+        localStorage.setItem("fileId", res?.files[0]?.id);
+        fileId = res?.files[0]?.id;
+      }
+    }
+  };
   useEffect(() => {
     // get fileId in google cloud
-    const getfileid = async () => {
-      // await initDatabase()
-      if (isEmpty(fileId)) {
-        const res: any = await invoke("google_drive_search", {
-          token: session?.accessToken,
-        });
-        if (!isUndefined(res?.files[0])) {
-          localStorage.setItem("fileId", res?.files[0]?.id);
-          fileId = res?.files[0]?.id;
-        }
-      }
-    };
-    getfileid();
+    // c
+    // getfileid();
+    getData();
   }, []);
 
   const handleChange = async (e: any) => {
-    console.log("abc");
     e.preventDefault();
     const nowLocalTime = msToTimeString(new Date().getTime());
     if (isEmpty(filePath) && !isEmpty(fileId)) {
@@ -229,9 +241,42 @@ export default function Home() {
     }
   };
 
+  const getData = async () => {
+    const data: Array<Sync> = await invoke("get_sync");
+    const syncData: SyncDataType | undefined = syncTypes.find(
+      (item) => item.type === data[0].type
+    );
+    if (!isUndefined(syncData)) {
+      setSynctype(syncData?.value);
+      setSyncstatus(data[0].status);
+      setfilePath(data[0].file_path);
+      fileId = data[0].file_id;
+      localStorage.setItem("fileId", fileId);
+      setDetail(data[0].detail);
+    } else {
+      await getfileid();
+    }
+    console.log("interval",intervalID)
+  };
+
+  const saveSync = () => {
+    const nowMs = new Date().getTime();
+    // const nowTime = msToTimeString(nowMs);
+    const syncdata = syncTypes.find((item) => item.value === synctype);
+    invoke("insert_sync_info", {
+      fileId,
+      filePath,
+      type: syncdata?.type,
+      detail,
+      status: syncstatus,
+      createOn: nowMs.toString(),
+    });
+    clearInterval(intervalID)
+    setSync(!sync);
+  };
+
   return (
     <div className="flex-grow bg-white p-4 h-[80vh] rounded-tl-xl text-black">
-      {/* Content for the second div */}
       <div className="flex-grow bg-white p-6">
         <h1 className="text-4xl font-bold">Settings</h1>
         <div className="border-b-2 mt-4 mb-6"></div>
@@ -274,7 +319,10 @@ export default function Home() {
                   </p>
                 </div>
                 <div className="px-4 py-4 h">
-                  <Toggle />
+                  <Toggle
+                    checked={syncstatus}
+                    onChange={(e, checked) => setSyncstatus(checked)}
+                  />
                 </div>
               </div>
 
@@ -283,11 +331,20 @@ export default function Home() {
                   <p className="text-gray-700 ml-2 mr-2 mb-2 text-xs">
                     Sync Period:
                   </p>
-                  <SelectInput />
+                  <SelectInput
+                    status={syncstatus}
+                    type={synctype}
+                    settype={handleSyncType}
+                  />
                 </div>
                 <div className=" w-1/2 pl-8 pr-4">
                   <p className="text-gray-700 mb-2 text-xs">Sync Time:</p>
-                  <TimePicker />
+                  <SelectDetail
+                    status={syncstatus}
+                    type={synctype}
+                    detail={detail}
+                    setDetail={setDetail}
+                  />
                 </div>
               </div>
             </div>
@@ -295,10 +352,16 @@ export default function Home() {
         </div>
       </div>
       <div className="flex flex-row justify-end mr-4">
-        <button className="border border-gray-200 text-black hover:border-[#190482] hover:text-[#190482] font-bold py-2 px-4 rounded m-4 p-4">
+        <button
+          className="border border-gray-200 text-black hover:border-[#190482] hover:text-[#190482] font-bold py-2 px-4 rounded m-4 p-4"
+          onClick={getData}
+        >
           Cancel
         </button>
-        <button className="border border-gray-200 text-black  hover:border-[#190482] hover:text-[#190482] font-bold py-2 px-4 rounded m-4 p-4">
+        <button
+          className="border border-gray-200 text-black  hover:border-[#190482] hover:text-[#190482] font-bold py-2 px-4 rounded m-4 p-4"
+          onClick={saveSync}
+        >
           Save changes
         </button>
       </div>

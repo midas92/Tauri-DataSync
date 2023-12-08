@@ -60,6 +60,7 @@ export const authOptions = {
       httpOptions: {
         timeout: 50000,
       },
+      allowDangerousEmailAccountLinking: true,
       authorization: 
       GOOGLE_AUTHORIZATION_URL
     }),
