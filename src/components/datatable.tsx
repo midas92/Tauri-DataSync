@@ -9,9 +9,8 @@ import Paper from "@mui/material/Paper";
 import { Datas } from "@/types/logs";
 import { isNull, isUndefined } from "lodash";
 
-
 export default function Datatable(props: Datas) {
-  let id = (props.currentPage-1) *5 || 0;
+  let id = (props.currentPage - 1) * 5 || 0;
   return (
     <TableContainer component={Paper}>
       <Table sx={{ minWidth: 650 }} aria-label="simple table">
@@ -26,7 +25,13 @@ export default function Datatable(props: Datas) {
         </TableHead>
         <TableBody>
           {isNull(props.datas) || isUndefined(props.datas) ? (
-           <TableCell component="th" scope="row">Loading ...</TableCell> 
+            <TableRow
+              sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+            >
+              <TableCell component="th" scope="row">
+                Loading ...
+              </TableCell>
+            </TableRow>
           ) : (
             props.datas.map((row) => {
               ++id;
