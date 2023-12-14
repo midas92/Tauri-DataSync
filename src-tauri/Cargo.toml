@@ -17,7 +17,7 @@ tauri-build = { version = "1.5.0", features = [] }
 [dependencies]
 serde_json = "1.0"
 serde = { version = "1.0", features = ["derive"] }
-tauri = { version = "1.5.2", features = [ "path-all", "fs-all", "dialog-all"] }
+tauri = { version = "1.5.2", features = [ "shell-open", "path-all", "fs-all", "dialog-all"] }
 tokio = { version = "*", features = [ "fs" ] }
 tokio-util = { version = "*", features = [ "codec" ] }
 reqwest = { version = "*", features = [ "json", "stream", "multipart" ] }
@@ -25,6 +25,8 @@ futures-util = "0.3"
 thiserror = "1.0"
 dirs = "5.0.1"
 rsqlite = "1.0.0"
+tauri-plugin-oauth = { git = "https://github.com/FabianLars/tauri-plugin-oauth", branch = "main" }
+
 
 [features]
 # this feature is used for production builds or when `devPath` points to the filesystem and the built-in dev server is disabled.

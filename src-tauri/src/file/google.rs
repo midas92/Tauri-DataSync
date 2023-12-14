@@ -99,7 +99,6 @@ pub async fn google_drive_update_metadata(
         .bearer_auth(token)
         .header("Content-Type", "application/json")
         .json(&metadata);
-    // println!("hi, {}", request.to_string());
     let response = request.send().await?;
     response.json().await.map_err(Into::into)
 }

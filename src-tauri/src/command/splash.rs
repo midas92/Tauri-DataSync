@@ -8,6 +8,5 @@ pub fn close_splashscreen(window: tauri::Window) {
         splashscreen.close().unwrap();
     }
     database::init();
-    // Show main window
     window.get_window("main").unwrap().show().unwrap();
 }

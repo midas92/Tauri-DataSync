@@ -10,41 +10,41 @@ import { useSession, signIn } from "next-auth/react";
 import { isEmpty, isNull, isUndefined } from "lodash";
 import { syncTypes } from "@/constants/sync";
 import { Sync, SyncDataType } from "@/types/sync";
-import { SyncContext } from "@/app/setting/layout"
+import { SyncContext } from "@/app/setting/layout";
+import { refreshAccessToken } from "@/services/auth";
 
 const Header: React.FC = () => {
-  let { sync, setIntervalID } = useContext(SyncContext);
-  const { data: session }: any = useSession({
-    required: false,
-  });
+  let { sync, setIntervalID, token, setToken, setRefreshLog, refreshLog } = useContext(SyncContext);
   let callSync = false;
   const filePath = localStorage.getItem("filePath") || "";
   const fileId = localStorage.getItem("fileId") || "";
   const syncData = async (type = "Manual") => {
-    if (!isEmpty(filePath) && !isEmpty(fileId) && !isNull(session)) {
+    console.log('token', token)
+    if (!isEmpty(filePath) && !isEmpty(fileId) && !isNull(token.access_token)) {
+      await refreshAccessToken(token, setToken);
       const fileMetadata = await getLastModifiedDate(filePath);
       console.log(fileMetadata, "filemetadata");
       const nowLocalTime = msToTimeString(new Date().getTime());
-      const cloudFileInfo = await getGoogleDriveFileInfo(fileId, session);
+      const cloudFileInfo = await getGoogleDriveFileInfo(fileId, token);
       const filename = cloudFileInfo?.name.split("--");
       console.log("cloud", filename);
       const cloudModified = msToTimeString(parseInt(filename[1]));
-      if (fileMetadata.mtimeMS > filename[1]) {
+      if (fileMetadata > filename[1]) {
         //upload
         console.log("upload update");
         console.log("cloudModified", cloudModified);
         let res: any = await invoke("google_drive_update_content", {
           path: filePath,
-          token: session?.accessToken,
+          token: token?.access_token,
           fileid: fileId,
         });
         console.log("update_content", res);
 
         let res1: any = await invoke("google_drive_update_metadata", {
           path: filePath,
-          token: session?.accessToken,
+          token: token?.access_token,
           fileid: fileId,
-          mtime: parseInt(fileMetadata?.mtimeMS).toString(),
+          mtime: fileMetadata.toString(),
         });
         console.log("res1", res1);
         await invoke("insert_log", {
@@ -61,7 +61,7 @@ const Header: React.FC = () => {
         console.log("file download");
         await invoke("google_drive_download", {
           path: filePath.toString(),
-          token: session?.accessToken,
+          token: token?.access_token,
           fileid: fileId,
           filepath: true,
         });
@@ -75,6 +75,7 @@ const Header: React.FC = () => {
         });
         console.log("create log to download");
       }
+      setRefreshLog(!refreshLog)
     }
   };
   useEffect(() => {
@@ -85,60 +86,50 @@ const Header: React.FC = () => {
     if (callSync) {
       const data: Array<Sync> = await invoke("get_sync");
       console.log("data", data);
-      const syncDataValue: SyncDataType | undefined = syncTypes.find(
-        (item) => item.type === data[0].type
+      const syncDataValue: SyncDataType | undefined = syncTypes?.find(
+        (item) => item.type === data[0]?.type
       );
-      const setTime = new Date(data[0].create_on);
-      if (data[0].status) {
+      const setTime = new Date(data[0]?.create_on);
+      if (data[0]?.status) {
         if (syncDataValue?.type === "Daily") {
-            await getFirstSynctime(
-              setTime,
-              "Daily",
-              data[0].detail,
-              data[0].id
-            );
-            const intervalID = setInterval(async () => {
-              console.log("Daily");
-              await runSyncData("Daily", data[0].detail);
-              await invoke("update_sync_create_on", {
-                id: data[0].id,
-                time: new Date().getTime().toString(),
-              });
-            }, 1000 * 60);
-            setIntervalID(intervalID);
-        } else if (syncDataValue?.type === "Weekly"){
-            await getFirstSynctime(
-              setTime,
-              "Weekly",
-              data[0].detail,
-              data[0].id
-            );
-            const intervalID = setInterval(async () => {
-              console.log("Weekly");
-              await runSyncData("Weekly", data[0].detail);
-              await invoke("update_sync_create_on", {
-                id: data[0].id,
-                time: new Date().getTime().toString(),
-              });
-            }, 1000 * 60 * 60);
-            setIntervalID(intervalID);
-          } else if (syncDataValue?.type === "Monthly") {
-            await getFirstSynctime(
-              setTime,
-              "Monthly",
-              data[0].detail,
-              data[0].id
-            );
+          await getFirstSynctime(setTime, "Daily", data[0].detail, data[0].id);
+          const intervalID = setInterval(async () => {
+            console.log("Daily");
+            await runSyncData("Daily", data[0].detail);
+            await invoke("update_sync_create_on", {
+              id: data[0].id,
+              time: new Date().getTime().toString(),
+            });
+          }, 1000 * 60);
+          setIntervalID(intervalID);
+        } else if (syncDataValue?.type === "Weekly") {
+          await getFirstSynctime(setTime, "Weekly", data[0].detail, data[0].id);
+          const intervalID = setInterval(async () => {
+            console.log("Weekly");
+            await runSyncData("Weekly", data[0].detail);
+            await invoke("update_sync_create_on", {
+              id: data[0].id,
+              time: new Date().getTime().toString(),
+            });
+          }, 1000 * 60 * 60);
+          setIntervalID(intervalID);
+        } else if (syncDataValue?.type === "Monthly") {
+          await getFirstSynctime(
+            setTime,
+            "Monthly",
+            data[0].detail,
+            data[0].id
+          );
 
-            const intervalID = setInterval(async () => {
-              console.log("Monthly");
-              await runSyncData("Monthly", data[0].detail);
-              await invoke("update_sync_create_on", {
-                id: data[0].id,
-                time: new Date().getTime().toString(),
-              });
-            }, 1000 * 60 * 60 * 24);
-            setIntervalID(intervalID);
+          const intervalID = setInterval(async () => {
+            console.log("Monthly");
+            await runSyncData("Monthly", data[0].detail);
+            await invoke("update_sync_create_on", {
+              id: data[0].id,
+              time: new Date().getTime().toString(),
+            });
+          }, 1000 * 60 * 60 * 24);
+          setIntervalID(intervalID);
         }
       }
     }
@@ -222,7 +213,7 @@ const Header: React.FC = () => {
         {/* <span className="m-2 p-2 text-[#190482] ">Last sync: 5 min ago</span> */}
         <button
           className="m-2 p-2 bg-[#190482] text-gray-100 hover:bg-[#5c49bd] font-bold py-2 px-4 rounded-md"
-          onClick={() => syncData}
+          onClick={() => syncData()}
         >
           Sync Now
         </button>

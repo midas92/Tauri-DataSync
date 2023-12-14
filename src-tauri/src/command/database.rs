@@ -219,10 +219,7 @@ pub fn get_sync() -> Vec<Sync> {
 
 // Update create_on in sync table
 #[tauri::command]
-pub fn update_sync_create_on(
-    id: i32,
-    time: &str,
-) {
+pub fn update_sync_create_on(id: i32, time: &str) {
     let db_path = get_db_path();
     let connection = Database::open(&db_path).unwrap();
     connection

@@ -18,18 +18,41 @@ interface Sync {
   file_path: string;
   status: boolean;
   type: string;
-  create_on:string,
+  create_on: string;
 }
 
 interface SyncDataType {
-    value : string,
-    type : string
+  value: string;
+  type: string;
+}
+
+interface TokenType {
+  access_token: string;
+  refresh_token: string;
+  expiration: number;
 }
 
 interface SyncContextType {
-    intervalID : NodeJS.Timeout | number,
-    setIntervalID:(e : any)=>void
-    sync : boolean;
-    setSync : (e : boolean)=>void
+  intervalID: NodeJS.Timeout | number;
+  setIntervalID: (e: any) => void;
+  sync: boolean;
+  setSync: (e: boolean) => void;
+  token: TokenType;
+  setToken: (e: any) => void;
+  refreshLog: boolean,
+  setRefreshLog : (e : boolean)=>void
 }
-export type { SyncDetail, SyncType, Sync,SyncDataType,SyncContextType };
+
+interface ModifiedTimeType {
+  nanos_since_epoch : number;
+  secs_since_epoch : number;
+}
+export type {
+  SyncDetail,
+  SyncType,
+  Sync,
+  SyncDataType,
+  SyncContextType,
+  TokenType,
+  ModifiedTimeType,
+};
