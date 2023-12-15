@@ -29,6 +29,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     refresh_token: "",
     expiration: 0,
   });
+
   const [refreshLog, setRefreshLog] = useState(false);
 
   useEffect(() => {

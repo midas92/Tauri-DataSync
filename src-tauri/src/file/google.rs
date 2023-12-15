@@ -79,7 +79,7 @@ pub async fn google_drive_update_content(
 pub async fn google_drive_update_metadata(
     path: &str,
     token: &str,
-    fileid: &str,
+    file_id: &str,
     mtime: &str,
 ) -> Myresult<serde_json::Value> {
     // Create the request and attach the file to the body
@@ -94,7 +94,7 @@ pub async fn google_drive_update_metadata(
     let request = client
         .patch(format!(
             "https://www.googleapis.com/drive/v3/files/{}",
-            fileid
+            file_id
         ))
         .bearer_auth(token)
         .header("Content-Type", "application/json")

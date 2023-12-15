@@ -80,12 +80,14 @@ export default function Home() {
   const [fileId, setFileId] = useState("");
 
   const getfileid = async () => {
-    if (isEmpty(fileId)) {
+    if (isEmpty(fileId) && !isEmpty(token.refresh_token)) {
+      console.log("first token", token);
       await refreshAccessToken(token, setToken);
       const res: any = await invoke("google_drive_search", {
         token: token?.access_token,
       });
-      if (!isUndefined(res?.files[0])) {
+      console.log("fild id res", res);
+      if (res.files.length > 0) {
         localStorage.setItem("fileId", res?.files[0]?.id);
         setFileId(res?.files[0]?.id);
       }
@@ -145,6 +147,7 @@ export default function Home() {
             },
           ],
         });
+        console.log("file", file);
         if (!isNull(file)) {
           setfilePath(file.toString());
           const fileMetadata = await getLastModifiedDate(file.toString());
@@ -159,11 +162,10 @@ export default function Home() {
             console.log("res", res);
             localStorage.setItem("fileId", res?.id);
             setFileId(res?.id);
-            console.log("file uploaded");
             let res1: any = await invoke("google_drive_update_metadata", {
-              path: file,
+              path: file.toString(),
               token: token?.access_token,
-              fileid: fileId,
+              fileId: res?.id,
               mtime: fileMetadata?.toString(),
             });
             console.log("res1", res1);
@@ -186,7 +188,7 @@ export default function Home() {
             const filename = cloudFileInfo?.name.split("--");
             console.log("cloud", filename);
             const cloudModified = msToTimeString(parseInt(filename[1]));
-            if ((fileMetadata || 0) > filename[1]) {
+            if ((fileMetadata || 0) >= filename[1]) {
               //upload
               console.log("upload update");
               console.log("cloudModified", cloudModified);
@@ -198,7 +200,7 @@ export default function Home() {
               console.log("update_content", res);
 
               let res1: any = await invoke("google_drive_update_metadata", {
-                path: filePath,
+                path: file.toString(),
                 token: token?.access_token,
                 fileid: fileId,
                 mtime: fileMetadata?.toString(),
@@ -248,10 +250,14 @@ export default function Home() {
     if (!isUndefined(syncData)) {
       setSynctype(syncData?.value);
       setSyncstatus(data[0]?.status);
-      setfilePath(data[0]?.file_path);
-      localStorage.setItem("filePath", data[0]?.file_path);
-      setFileId(data[0]?.file_id);
-      localStorage.setItem("fileId", data[0]?.file_id);
+      if (isUndefined(data[0].file_path)) {
+        setfilePath(data[0]?.file_path);
+        localStorage.setItem("filePath", data[0]?.file_path);
+      }
+      if (isUndefined(data[0].file_id)) {
+        setFileId(data[0]?.file_id);
+        localStorage.setItem("fileId", data[0]?.file_id);
+      }
       setDetail(data[0]?.detail);
     } else {
       await getfileid();
@@ -303,7 +309,9 @@ export default function Home() {
                     id="files"
                     style={{ display: "none" }}
                     type="file"
-                    onClick={() => handleChange}
+                    onClick={async (e) => {
+                      await handleChange(e);
+                    }}
                   />
                 </button>
               </div>
