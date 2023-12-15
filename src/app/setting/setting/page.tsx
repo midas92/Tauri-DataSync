@@ -13,31 +13,38 @@ import { refreshAccessToken } from "@/services/auth";
 
 export const getLastModifiedDate = async (path: string) => {
   try {
-    const res: ModifiedTimeType = await invoke("get_file_metainfo", {
-      filePath: path,
-    });
-    return res.secs_since_epoch * 1000;
+    if (typeof window !== "undefined") {
+      const res: ModifiedTimeType = await invoke("get_file_metainfo", {
+        filePath: path,
+      });
+      return res.secs_since_epoch * 1000;
+    }
   } catch (err) {
     console.error("Error getting file status:", err);
     return 0;
   }
 };
 
-export const getGoogleDriveFileInfo = async (fileId: string, token: TokenType) => {
+export const getGoogleDriveFileInfo = async (
+  fileId: string,
+  token: TokenType
+) => {
   try {
-    const res = await fetch(
-      "https://www.googleapis.com/drive/v3/files/" + fileId,
-      {
-        method: "GET",
-        headers: {
-          Authorization: "Bearer " + token?.access_token,
-        },
+    if (typeof window !== "undefined") {
+      const res = await fetch(
+        "https://www.googleapis.com/drive/v3/files/" + fileId,
+        {
+          method: "GET",
+          headers: {
+            Authorization: "Bearer " + token?.access_token,
+          },
+        }
+      );
+      if (res.ok) {
+        return res.json();
+      } else {
+        throw new Error(`HTTP error: ${res.status}`);
       }
-    );
-    if (res.ok) {
-      return res.json();
-    } else {
-      throw new Error(`HTTP error: ${res.status}`);
     }
   } catch (err) {
     console.error("Error getting file status:", err);
@@ -69,10 +76,8 @@ export default function Home() {
     setSynctype(e);
     setDetail(0);
   };
-  const [filePath, setfilePath] = useState(
-    localStorage.getItem("filePath") || ""
-  );
-  let fileId = localStorage.getItem("fileId") || "";
+  const [filePath, setfilePath] = useState("");
+  const [fileId, setFileId] = useState("");
 
   const getfileid = async () => {
     if (isEmpty(fileId)) {
@@ -82,11 +87,13 @@ export default function Home() {
       });
       if (!isUndefined(res?.files[0])) {
         localStorage.setItem("fileId", res?.files[0]?.id);
-        fileId = res?.files[0]?.id;
+        setFileId(res?.files[0]?.id);
       }
     }
   };
   useEffect(() => {
+    setfilePath(localStorage.getItem("filePath") || "");
+    setFileId(localStorage.getItem("fileId") || "");
     getData();
   }, []);
 
@@ -151,13 +158,13 @@ export default function Home() {
             });
             console.log("res", res);
             localStorage.setItem("fileId", res?.id);
-            fileId = res?.id;
+            setFileId(res?.id);
             console.log("file uploaded");
             let res1: any = await invoke("google_drive_update_metadata", {
               path: file,
               token: token?.access_token,
               fileid: fileId,
-              mtime: fileMetadata.toString(),
+              mtime: fileMetadata?.toString(),
             });
             console.log("res1", res1);
             setfilePath(file.toString());
@@ -165,7 +172,7 @@ export default function Home() {
               drive: "google",
               actionType: "manual",
               create: nowLocalTime,
-              prev: msToTimeString(fileMetadata),
+              prev: msToTimeString(fileMetadata || 0),
               upload: "upload",
               path: file.toString(),
             });
@@ -179,7 +186,7 @@ export default function Home() {
             const filename = cloudFileInfo?.name.split("--");
             console.log("cloud", filename);
             const cloudModified = msToTimeString(parseInt(filename[1]));
-            if (fileMetadata > filename[1]) {
+            if ((fileMetadata || 0) > filename[1]) {
               //upload
               console.log("upload update");
               console.log("cloudModified", cloudModified);
@@ -194,7 +201,7 @@ export default function Home() {
                 path: filePath,
                 token: token?.access_token,
                 fileid: fileId,
-                mtime: fileMetadata.toString(),
+                mtime: fileMetadata?.toString(),
               });
               console.log("res1", res1);
               invoke("insert_log", {
@@ -242,7 +249,7 @@ export default function Home() {
       setSynctype(syncData?.value);
       setSyncstatus(data[0]?.status);
       setfilePath(data[0]?.file_path);
-      fileId = data[0]?.file_id;
+      setFileId(data[0]?.file_id);
       localStorage.setItem("fileId", fileId);
       setDetail(data[0]?.detail);
     } else {

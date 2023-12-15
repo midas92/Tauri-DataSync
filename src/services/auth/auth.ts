@@ -51,13 +51,15 @@ export const googleSignIn = async (payload: string) => {
     console.log("response", response);
     const refreshedTokens = await response.json();
     return {
-      access_token :refreshedTokens.access_token,
-      refresh_token : refreshedTokens.refresh_token,
-      expiration : Date.now() + refreshedTokens.expires_in * 1000
-        };
+      access_token: refreshedTokens.access_token,
+      refresh_token: refreshedTokens.refresh_token,
+      expiration: Date.now() + refreshedTokens.expires_in * 1000,
+    };
   }
 };
 
 export const signOut = () => {
-  localStorage.removeItem("token");
+  if (typeof window !== "undefined") {
+    localStorage.removeItem("token");
+  }
 };

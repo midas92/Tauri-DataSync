@@ -4,7 +4,7 @@ import {
   getGoogleDriveFileInfo,
 } from "@/app/setting/setting/page";
 import { invoke } from "@tauri-apps/api/tauri";
-import React, { useEffect, useContext } from "react";
+import React, { useEffect, useContext, useState } from "react";
 import { isEmpty, isNull } from "lodash";
 import { syncTypes } from "@/constants/sync";
 import { Sync, SyncDataType } from "@/types/sync";
@@ -12,12 +12,13 @@ import { SyncContext } from "@/app/setting/layout";
 import { refreshAccessToken } from "@/services/auth";
 
 const Header: React.FC = () => {
-  let { sync, setIntervalID, token, setToken, setRefreshLog, refreshLog } = useContext(SyncContext);
+  let { sync, setIntervalID, token, setToken, setRefreshLog, refreshLog } =
+    useContext(SyncContext);
   let callSync = false;
-  const filePath = localStorage.getItem("filePath") || "";
-  const fileId = localStorage.getItem("fileId") || "";
+  const [filePath, setfilePath] = useState("");
+  const [fileId, setFileId] = useState("");
   const syncData = async (type = "Manual") => {
-    console.log('token', token)
+    console.log("token", token);
     if (!isEmpty(filePath) && !isEmpty(fileId) && !isNull(token.access_token)) {
       await refreshAccessToken(token, setToken);
       const fileMetadata = await getLastModifiedDate(filePath);
@@ -27,7 +28,7 @@ const Header: React.FC = () => {
       const filename = cloudFileInfo?.name.split("--");
       console.log("cloud", filename);
       const cloudModified = msToTimeString(parseInt(filename[1]));
-      if (fileMetadata > filename[1]) {
+      if ((fileMetadata || 0) > filename[1]) {
         //upload
         console.log("upload update");
         console.log("cloudModified", cloudModified);
@@ -42,7 +43,7 @@ const Header: React.FC = () => {
           path: filePath,
           token: token?.access_token,
           fileid: fileId,
-          mtime: fileMetadata.toString(),
+          mtime: fileMetadata?.toString(),
         });
         console.log("res1", res1);
         await invoke("insert_log", {
@@ -73,10 +74,12 @@ const Header: React.FC = () => {
         });
         console.log("create log to download");
       }
-      setRefreshLog(!refreshLog)
+      setRefreshLog(!refreshLog);
     }
   };
   useEffect(() => {
+    setfilePath(localStorage.getItem("filePath") || "");
+    setFileId(localStorage.getItem("fileId") || "");
     getSyncData();
   }, [sync]);
   const getSyncData = async () => {

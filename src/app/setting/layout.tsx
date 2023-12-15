@@ -1,9 +1,8 @@
 "use client";
-import Provider from "@/components/auth/Provider";
 import Header from "@/components/header";
 import Navbar from "@/components/navbar";
 import { SyncContextType, TokenType } from "@/types/sync";
-import { createContext, useState } from "react";
+import { createContext, useEffect, useState } from "react";
 
 export const SyncContext = createContext<SyncContextType>({
   intervalID: 0,
@@ -17,7 +16,7 @@ export const SyncContext = createContext<SyncContextType>({
   },
   setToken: (e) => {},
   refreshLog: false,
-  setRefreshLog : (e)=>{}
+  setRefreshLog: (e) => {},
 });
 
 export default function Layout({ children }: { children: React.ReactNode }) {
@@ -25,24 +24,36 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const [intervalID, setIntervalID] = useState<NodeJS.Timeout>(
     setTimeout(() => {}, 1)
   );
-  const [token, setToken] = useState<TokenType>(
-    JSON.parse(localStorage.getItem("token") || "{}")
-  );
+  const [token, setToken] = useState<TokenType>({
+    access_token: "",
+    refresh_token: "",
+    expiration: 0,
+  });
   const [refreshLog, setRefreshLog] = useState(false);
 
+  useEffect(() => {
+    setToken(JSON.parse(localStorage.getItem("token") || "{}"));
+  }, []);
   return (
     <div className="flex">
       <Navbar />
-      <Provider>
-        <SyncContext.Provider
-          value={{ sync, setSync, intervalID, setIntervalID, token, setToken, refreshLog, setRefreshLog }}
-        >
-          <div className="w-4/5 bg-gray-100 h-screen">
-            <Header />
-            {children}
-          </div>
-        </SyncContext.Provider>
-      </Provider>
+      <SyncContext.Provider
+        value={{
+          sync,
+          setSync,
+          intervalID,
+          setIntervalID,
+          token,
+          setToken,
+          refreshLog,
+          setRefreshLog,
+        }}
+      >
+        <div className="w-4/5 bg-gray-100 h-screen">
+          <Header />
+          {children}
+        </div>
+      </SyncContext.Provider>
     </div>
   );
 }

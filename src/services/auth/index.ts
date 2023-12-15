@@ -11,7 +11,9 @@ export const login = (setToken: any) => {
   listen("oauth://url", async (data) => {
     let token = await googleSignIn(data.payload as string);
     if (!isUndefined(token)) {
-      localStorage.setItem("token", JSON.stringify(token));
+      if (typeof window !== "undefined") {
+        localStorage.setItem("token", JSON.stringify(token));
+      }
       setToken(token);
     }
   });
@@ -63,9 +65,11 @@ export const refreshAccessToken = async (token: TokenType, setToken: any) => {
         expiration: Date.now() + refreshedTokens.expires_in * 1000,
         refresh_token: refreshedTokens.refresh_token ?? token.refresh_token, // Fall back to old refresh token
       };
-      localStorage.setItem("newtoken", JSON.stringify(newToken));
+      if (typeof window !== "undefined") {
+        localStorage.setItem("newtoken", JSON.stringify(newToken));
+      }
       setToken(newToken);
-    } 
+    }
   } catch (error) {
     console.log(error);
 
