@@ -70,6 +70,7 @@ export const refreshAccessToken = async (token: TokenType, setToken: any) => {
       }
       setToken(newToken);
     }
+    console.log('ignore refreshtoken')
   } catch (error) {
     console.log(error);
 

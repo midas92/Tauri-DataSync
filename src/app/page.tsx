@@ -8,7 +8,6 @@ export default function Dashboard () {
 
   useEffect(() => {
     router.push("/login");
-    invoke('close_splashscreen')
   }, []);
   return <div></div>;
 };

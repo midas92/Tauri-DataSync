@@ -4,7 +4,8 @@
     "beforeBuildCommand": "npm run build",
     "beforeDevCommand": "npm run dev",
     "devPath": "http://localhost:3000",
-    "distDir": "../out"
+    "distDir": "../out",
+    "withGlobalTauri": true
   },
   "package": {
     "productName": "cloudsync",
@@ -13,7 +14,7 @@
   "tauri": {
     "allowlist": {
       "fs": {
-        "all": true, 
+        "all": true,
         "readFile": true,
         "writeFile": true,
         "readDir": true,
@@ -25,10 +26,10 @@
         "exists": true
       },
       "dialog": {
-        "all": true, 
-        "ask": true, 
-        "confirm": true, 
-        "message": true, 
+        "all": true,
+        "ask": true,
+        "confirm": true,
+        "message": true,
         "open": true,
         "save": true
       },
@@ -74,8 +75,7 @@
       }
     },
     "security": {
-      "csp":"script-src 'strict-dynamic' 'nonce-rAnd0m123' 'unsafe-inline' http: https:; object-src 'none'; base-uri 'none'; require-trusted-types-for 'script'; report-uri https://csp.example.com;"
-      
+      "csp": null
     },
     "updater": {
       "active": false
@@ -90,7 +90,8 @@
         "visible": false,
         "label": "main",
         "center": true
-      },{
+      },
+      {
         "width": 400,
         "height": 600,
         "decorations": false,

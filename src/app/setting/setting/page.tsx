@@ -249,8 +249,9 @@ export default function Home() {
       setSynctype(syncData?.value);
       setSyncstatus(data[0]?.status);
       setfilePath(data[0]?.file_path);
+      localStorage.setItem("filePath", data[0]?.file_path);
       setFileId(data[0]?.file_id);
-      localStorage.setItem("fileId", fileId);
+      localStorage.setItem("fileId", data[0]?.file_id);
       setDetail(data[0]?.detail);
     } else {
       await getfileid();
@@ -291,7 +292,8 @@ export default function Home() {
                   className="flex-1 relative p-2.5  bg-white"
                   placeholder="Please select directory to sync cloud database"
                   type="text"
-                  defaultValue={filePath}
+                  value={filePath}
+                  onChange={() => {}}
                 />
                 <button className="rounded bg-gray-50 hover:text-white hover:bg-indigo-800 text-indigo-800 h-10 flex flex-row items-center justify-center py-0 px-4 box-border text-navy-100">
                   <label htmlFor="files" className="btn">

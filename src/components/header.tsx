@@ -20,6 +20,7 @@ const Header: React.FC = () => {
   const syncData = async (type = "Manual") => {
     console.log("token", token);
     if (!isEmpty(filePath) && !isEmpty(fileId) && !isNull(token.access_token)) {
+      console.log("start sync")
       await refreshAccessToken(token, setToken);
       const fileMetadata = await getLastModifiedDate(filePath);
       console.log(fileMetadata, "filemetadata");
