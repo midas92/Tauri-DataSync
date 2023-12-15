@@ -8,7 +8,7 @@
     "withGlobalTauri": true
   },
   "package": {
-    "productName": "cloudsync",
+    "productName": "Cloudsync",
     "version": "0.1.0"
   },
   "tauri": {
@@ -85,7 +85,7 @@
         "fullscreen": false,
         "height": 800,
         "resizable": false,
-        "title": "cloudsync",
+        "title": "Cloudsync",
         "width": 1200,
         "visible": false,
         "label": "main",
