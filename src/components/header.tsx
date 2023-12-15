@@ -3,11 +3,9 @@ import {
   msToTimeString,
   getGoogleDriveFileInfo,
 } from "@/app/setting/setting/page";
-import { invoke } from "@tauri-apps/api";
+import { invoke } from "@tauri-apps/api/tauri";
 import React, { useEffect, useContext } from "react";
-import { redirect } from "next/navigation";
-import { useSession, signIn } from "next-auth/react";
-import { isEmpty, isNull, isUndefined } from "lodash";
+import { isEmpty, isNull } from "lodash";
 import { syncTypes } from "@/constants/sync";
 import { Sync, SyncDataType } from "@/types/sync";
 import { SyncContext } from "@/app/setting/layout";

@@ -1,5 +1,5 @@
 "use client";
-import { invoke } from "@tauri-apps/api";
+import { invoke } from "@tauri-apps/api/tauri";
 import React, { useCallback, useEffect, useState, useContext } from "react";
 import Datatable from "@/components/datatable";
 import { Pagination } from "@mui/material";
