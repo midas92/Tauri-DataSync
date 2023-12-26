@@ -215,7 +215,7 @@ const Header: React.FC = () => {
         {/* <span className="m-2 p-2 text-[#190482] ">Last sync: 5 min ago</span> */}
         <button
           className="m-2 p-2 bg-[#190482] text-gray-100 hover:bg-[#5c49bd] font-bold py-2 px-4 rounded-md"
-          onClick={() => syncData()}
+          onClick={async () => await syncData()}
         >
           Sync Now
         </button>
