@@ -2,7 +2,6 @@ import { LicenseModal } from "@/types/license";
 import { useState } from "react";
 
 export default function Modal(props: LicenseModal) {
-  const [licenseId, setLicenseId] = useState("");
   const [licenseKey, setLicenseKey] = useState("");
   const handleModalOverlayClick = (event: React.MouseEvent<HTMLDivElement>) => {
     if (event.target === event.currentTarget) {
@@ -10,7 +9,6 @@ export default function Modal(props: LicenseModal) {
     }
   };
   const submit = ()=> {
-    localStorage.setItem("licenseid",licenseId);
     localStorage.setItem("licensekey",licenseKey);
     props.handleLicenseSubmit();
   }
@@ -20,23 +18,12 @@ export default function Modal(props: LicenseModal) {
       onClick={handleModalOverlayClick}
     >
       <div className="bg-white p-12 rounded-2xl w-1/3 ">
-        <h2 className="text-3xl font-bold mb-1">License</h2>
-        <p className="text-gray-700 text-xs">Enter license ID and key:</p>
-        <div className="mb-2">
-          <label className="block text-gray-700 font-bold py-2">License ID</label>
-          <input
-            type="text"
-            placeholder="Enter ID"
-            className="border border-gray-300 px-4 py-2 w-full text-base"
-            value={licenseId}
-            onChange={(e) => setLicenseId(e.target.value)}
-          />
-        </div>
+        <h2 className="text-3xl font-bold mb-1">Licence</h2>
         <div className="mb-6">
-          <label className="block text-gray-700 font-bold py-2">License Key</label>
+          <label className="block text-gray-700 font-bold py-2">License licence Key</label>
           <input
             type="text"
-            placeholder="Enter Key"
+            placeholder="Type licence Key"
             className="border border-gray-300 px-4 py-2 w-full text-base"
             value={licenseKey}
             onChange={(e) => setLicenseKey(e.target.value)}

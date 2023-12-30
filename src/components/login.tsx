@@ -24,7 +24,7 @@ export default function Login(props: HandleLogin) {
           <Image
             className="w-12 h-12"
             alt=""
-            src="/user.svg"
+            src="/logo2.png"
             width={50}
             height={50}
           />
@@ -43,7 +43,6 @@ export default function Login(props: HandleLogin) {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
-
           <button
             className="bg-blue-800  rounded-md w-full py-4 px-5 text-white mb-5 xl:text-xl"
             onClick={submit}

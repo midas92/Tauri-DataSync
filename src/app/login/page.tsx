@@ -26,16 +26,9 @@ export default function Home() {
 
   const checkLisence = useCallback(async () => {
     let licenseKey = localStorage.getItem("licensekey");
-    let licenseId = localStorage.getItem("licenseid");
     let data: any;
-    if (licenseKey !== null && licenseKey !== '') {
-      const postData =
-        licenseId === ""
-          ? { license_key: licenseKey }
-          : {
-              license_key: licenseKey,
-              license_id: licenseId,
-            };
+    if (licenseKey !== null && licenseKey !== "") {
+      const postData = { license_key: licenseKey };
       const license = await fetch(
         "https://api.lemonsqueezy.com/v1/licenses/validate",
         {
@@ -80,7 +73,7 @@ export default function Home() {
         }
       }
     }
-  }, [email,licensevalidate]);
+  }, [email, licensevalidate]);
   useEffect(() => {
     checkEmail();
   }, [checkEmail]);

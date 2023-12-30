@@ -33,6 +33,19 @@ const Navbar: React.FC = () => {
             Logs
           </Link>
           <Link
+            href={routes.logs}
+            className="p-4 text-2xl text-gray-500 text-left hover:bg-gray-200 hover:text-[#190482] rounded-lg mb-2"
+            target="_blank"
+          >
+            About
+          </Link>
+          <Link
+            href={routes.logs}
+            className="p-4 text-2xl text-gray-500 text-left hover:bg-gray-200 hover:text-[#190482] rounded-lg mb-2"
+          >
+            Help
+          </Link>
+          <Link
             href={routes.login}
             className="p-4 text-2xl text-gray-500 text-left hover:bg-gray-200 hover:text-[#190482] rounded-lg"
             onClick={() => logout()}
