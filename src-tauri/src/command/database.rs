@@ -84,6 +84,7 @@ fn create_db_file() {
 // Check whether the database file exists.
 fn db_file_exists() -> bool {
     let db_path = get_db_path();
+    // println!("hello, Db _ path, {:?}", db_path);
     Path::new(&db_path).exists()
 }
 

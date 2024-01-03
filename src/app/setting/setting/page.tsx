@@ -81,21 +81,21 @@ export default function Home() {
 
   const getfileid = async () => {
     try {
-    if (isEmpty(fileId) && !isEmpty(token.refresh_token)) {
-      console.log("first token", token);
-      await refreshAccessToken(token, setToken);
-      const res: any = await invoke("google_drive_search", {
-        token: token?.access_token,
-      });
-      console.log("fild id res", res);
-      if (res.files.length > 0) {
-        localStorage.setItem("fileId", res?.files[0]?.id);
-        setFileId(res?.files[0]?.id);
+      if (isEmpty(fileId) && !isEmpty(token.refresh_token)) {
+        console.log("first token", token);
+        await refreshAccessToken(token, setToken);
+        const res: any = await invoke("google_drive_search", {
+          token: token?.access_token,
+        });
+        console.log("fild id res", res);
+        if (res.files.length > 0) {
+          localStorage.setItem("fileId", res?.files[0]?.id);
+          setFileId(res?.files[0]?.id);
+        }
       }
+    } catch (err) {
+      console.log("err", err);
     }
-  } catch (err) {
-    console.log("err", err)
-  }
   };
   useEffect(() => {
     setfilePath(localStorage.getItem("filePath") || "");

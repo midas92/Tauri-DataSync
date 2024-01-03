@@ -9,7 +9,7 @@ const openBrowserToConsent = (port: string) => {
       "access_type=offline&" +
       `client_id=${process.env.GOOGLE_CLIENT_ID}&` +
       `redirect_uri=http%3A//localhost:${port}&` +
-      "scope=email%20profile%20openid%20https://www.googleapis.com/auth/drive&" +
+      "scope=email%20profile%20openid%20https://www.googleapis.com/auth/drive.file&" +
       "prompt=consent"
   );
 };
