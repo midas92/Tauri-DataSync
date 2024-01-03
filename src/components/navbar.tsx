@@ -33,15 +33,16 @@ const Navbar: React.FC = () => {
             Logs
           </Link>
           <Link
-            href={routes.logs}
+            href={routes.about}
             className="p-4 text-2xl text-gray-500 text-left hover:bg-gray-200 hover:text-[#190482] rounded-lg mb-2"
             target="_blank"
           >
             About
           </Link>
           <Link
-            href={routes.logs}
+            href={routes.Help}
             className="p-4 text-2xl text-gray-500 text-left hover:bg-gray-200 hover:text-[#190482] rounded-lg mb-2"
+            target="_blank"
           >
             Help
           </Link>

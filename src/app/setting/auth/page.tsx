@@ -25,8 +25,8 @@ export default function Auth() {
   return (
     <div className="flex-grow bg-white p-4 h-[80vh] rounded-tl-xl text-black flex justify-center m-10 flex-col mt-auto mb-auto ">
       <p className=" text-xl text-center">
-        Please login with Google Account which you want to sync data on Google
-        Drive.
+        BodyView CloudSync makes it simple to seamlessly back up your BodyMetrix
+        client&apos;s data to your Google Drive.
       </p>
       <Button
         onClick={loginRust}
@@ -41,7 +41,7 @@ export default function Auth() {
           marginBottom: "50px",
         }}
       >
-        Login with google with rust
+        Connect to Google Drive Now
       </Button>
     </div>
   );

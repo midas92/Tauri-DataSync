@@ -20,13 +20,13 @@ export default function Login(props: HandleLogin) {
         height={50}
       />
       <div className="w-full  ml-[60vw] mr-[13vw] py-8 px-4 sm:px-8 text-black">
-        <div className="rounded-lg bg-gray-100 w-20 h-20 mx-auto flex items-center justify-center">
+        <div className="rounded-lg bg-gray-100 w-32 h-28 mx-auto flex items-center justify-center">
           <Image
-            className="w-12 h-12"
+            className="w-24 h-20"
             alt=""
-            src="/logo2.png"
-            width={50}
-            height={50}
+            src="/logo.png"
+            width={70}
+            height={80}
           />
         </div>
         <div className="mt-8 text-center text-4xl ">
