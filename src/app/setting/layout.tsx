@@ -37,7 +37,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   }, []);
   return (
     <div className="flex">
-      <Navbar />
       <SyncContext.Provider
         value={{
           sync,
@@ -50,6 +49,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           setRefreshLog,
         }}
       >
+        <Navbar />
         <div className="w-4/5 bg-gray-100 h-screen">
           <Header />
           {children}

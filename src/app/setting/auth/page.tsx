@@ -15,6 +15,7 @@ export default function Auth() {
   useEffect(() => {
     if (!isUndefined(token?.access_token) && !isEmpty(token?.access_token)) {
       if (token?.expiration > Date.now()) {
+        console.log("hello")
         redirect(routes.setting);
       } else {
         console.log("token", token);

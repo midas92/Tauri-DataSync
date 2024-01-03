@@ -80,6 +80,7 @@ export default function Home() {
   const [fileId, setFileId] = useState("");
 
   const getfileid = async () => {
+    try {
     if (isEmpty(fileId) && !isEmpty(token.refresh_token)) {
       console.log("first token", token);
       await refreshAccessToken(token, setToken);
@@ -92,6 +93,9 @@ export default function Home() {
         setFileId(res?.files[0]?.id);
       }
     }
+  } catch (err) {
+    console.log("err", err)
+  }
   };
   useEffect(() => {
     setfilePath(localStorage.getItem("filePath") || "");

@@ -1,10 +1,21 @@
-import React from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { routes } from "@/constants/router";
 import { logout } from "@/services/auth";
+import { SyncContext } from "@/app/setting/layout";
+import { isEmpty, isUndefined } from "lodash";
 
 const Navbar: React.FC = () => {
+  const { token } = useContext(SyncContext);
+  const [user, setUser] = useState<boolean>(false);
+  useEffect(() => {
+    if (!isUndefined(token?.access_token) && !isEmpty(token?.access_token)) {
+      if (token?.expiration > Date.now()) {
+        setUser(true)
+      }
+    }
+  }, [token]);
   return (
     <div className="w-1/5 bg-gray-100 h-screen">
       {/* First div */}
@@ -21,13 +32,13 @@ const Navbar: React.FC = () => {
         {/* Content for the second div */}
         <div className="flex flex-col p-5">
           <Link
-            href={routes.setting}
+            href={user ? routes.setting : routes.auth}
             className=" p-4 text-2xl text-gray-500 text-left hover:bg-gray-200 hover:text-[#190482] rounded-lg mb-2"
           >
             Settings
           </Link>
           <Link
-            href={routes.logs}
+            href={user ? routes.logs : routes.auth}
             className="p-4 text-2xl text-gray-500 text-left hover:bg-gray-200 hover:text-[#190482] rounded-lg mb-2"
           >
             Logs
