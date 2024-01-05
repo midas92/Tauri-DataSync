@@ -1,5 +1,5 @@
 "use client";
-import * as React from "react";
+import React, {KeyboardEvent} from "react";
 import { useState } from "react";
 import Image from "next/image";
 import { HandleLogin } from "@/types/login";
@@ -9,6 +9,13 @@ export default function Login(props: HandleLogin) {
   const submit = () => {
     props.getEmail(email);
   };
+
+  const handleKey = (e : KeyboardEvent<HTMLInputElement>) => {
+    if(e.key === 'Enter') {
+      e.preventDefault()
+      submit()
+    }
+  }
 
   return (
     <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center">
@@ -20,9 +27,9 @@ export default function Login(props: HandleLogin) {
         height={50}
       />
       <div className="w-full  ml-[60vw] mr-[13vw] py-8 px-4 sm:px-8 text-black">
-        <div className="rounded-lg bg-gray-100 w-56 h-40 mx-auto flex items-center justify-center">
+        <div className="rounded-lg bg-gray-100 w-56 h-32 mx-auto flex items-center justify-center">
           <Image
-            className="w-48 h-32"
+            className="w-48 h-24"
             alt=""
             src="/logo.png"
             width={100}
@@ -42,6 +49,7 @@ export default function Login(props: HandleLogin) {
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+            onKeyDown={handleKey}
           />
           <button
             className="bg-blue-800  rounded-md w-full py-4 px-5 text-white mb-5 xl:text-xl"

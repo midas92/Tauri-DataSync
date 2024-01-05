@@ -5,7 +5,7 @@ import {
 } from "@/app/setting/setting/page";
 import { invoke } from "@tauri-apps/api/tauri";
 import React, { useEffect, useContext, useState } from "react";
-import { isEmpty, isNull } from "lodash";
+import { isEmpty, isNull, isUndefined } from "lodash";
 import { syncTypes } from "@/constants/sync";
 import { Sync, SyncDataType } from "@/types/sync";
 import { SyncContext } from "@/app/setting/layout";
@@ -17,6 +17,7 @@ const Header: React.FC = () => {
   let callSync = false;
   const [filePath, setfilePath] = useState("");
   const [fileId, setFileId] = useState("");
+  const [syncbtnstatus, setSyncBtnStatus] = useState(false);
   const syncData = async (type = "Manual") => {
     console.log("token", token);
     if (!isEmpty(filePath) && !isEmpty(fileId) && !isNull(token.access_token)) {
@@ -83,6 +84,14 @@ const Header: React.FC = () => {
     setFileId(localStorage.getItem("fileId") || "");
     getSyncData();
   }, [sync]);
+  
+  useEffect(() => {
+    if (!isUndefined(token?.access_token) && !isEmpty(token?.access_token)) {
+      if (token?.expiration > Date.now()) {
+        setSyncBtnStatus(true)
+      }
+    }
+  }, [token]);
   const getSyncData = async () => {
     callSync = !callSync;
     if (callSync) {
@@ -216,6 +225,7 @@ const Header: React.FC = () => {
         <button
           className="m-2 p-2 bg-[#190482] text-gray-100 hover:bg-[#5c49bd] font-bold py-2 px-4 rounded-md"
           onClick={async () => await syncData()}
+          hidden = {!syncbtnstatus}
         >
           Sync Now
         </button>

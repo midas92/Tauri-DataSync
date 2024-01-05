@@ -19,7 +19,7 @@ export default `
   </style>
 </head>
 <body>
-  <h2>BodySync is now connected to your Google Drive.</h2>
+  <h2>CloudSync is now connected to your Google Drive.</h2>
   <h3>You can close this window and return to the CloudCync App to finish the setup.</h3>
 </body>
 </html>

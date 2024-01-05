@@ -305,7 +305,7 @@ export default function Home() {
                   value={filePath}
                   onChange={() => {}}
                 />
-                <button className="rounded bg-gray-50 hover:text-white hover:bg-indigo-800 text-indigo-800 h-10 flex flex-row items-center justify-center py-0 px-4 box-border text-navy-100">
+                <button className="rounded bg-[#190482] text-gray-100 hover:bg-[#5c49bd] h-10 flex flex-row items-center justify-center py-0 px-4 box-border font-bold">
                   <label htmlFor="files" className="btn">
                     Browse Files
                   </label>
