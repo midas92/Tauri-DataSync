@@ -8,6 +8,16 @@ export default function Dashboard () {
 
   useEffect(() => {
     router.push("/login");
+    window.addEventListener("contextmenu", (event) => {
+      event.preventDefault();
+    });
+    const handleKeyDown = (event : KeyboardEvent) => {
+      if (event.key === 'F5') {
+        event.preventDefault();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
   }, []);
   return <div></div>;
 };
