@@ -66,7 +66,7 @@ export const refreshAccessToken = async (token: TokenType, setToken: any) => {
         refresh_token: refreshedTokens.refresh_token ?? token.refresh_token, // Fall back to old refresh token
       };
       if (typeof window !== "undefined") {
-        localStorage.setItem("newtoken", JSON.stringify(newToken));
+        localStorage.setItem("token", JSON.stringify(newToken));
       }
       setToken(newToken);
     }
