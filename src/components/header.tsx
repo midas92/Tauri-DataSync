@@ -44,7 +44,7 @@ const Header: React.FC = () => {
         let res1: any = await invoke("google_drive_update_metadata", {
           path: filePath,
           token: token?.access_token,
-          fileid: fileId,
+          fileId: fileId,
           mtime: fileMetadata?.toString(),
         });
         console.log("res1", res1);
