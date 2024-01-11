@@ -1,5 +1,5 @@
 "use client";
-import React, {KeyboardEvent} from "react";
+import React, {KeyboardEvent, useEffect} from "react";
 import { useState } from "react";
 import Image from "next/image";
 import { HandleLogin } from "@/types/login";
@@ -16,7 +16,7 @@ export default function Login(props: HandleLogin) {
       submit()
     }
   }
-
+  
   return (
     <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center">
       <Image
@@ -27,7 +27,7 @@ export default function Login(props: HandleLogin) {
         height={50}
       />
       <div className="w-full  ml-[60vw] mr-[13vw] py-8 px-4 sm:px-8 text-black">
-        <div className="rounded-lg bg-gray-100 w-56 h-32 mx-auto flex items-center justify-center">
+        <div className="rounded-lg bg-gray-100 w-60 h-28 mx-auto flex items-center justify-center">
           <Image
             className="w-48 h-24"
             alt=""

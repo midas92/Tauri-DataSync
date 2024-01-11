@@ -17,6 +17,10 @@ export const SyncContext = createContext<SyncContextType>({
   setToken: (e) => {},
   refreshLog: false,
   setRefreshLog: (e) => {},
+  showNotificationOfSuccess: false,
+  setShowNotificationOfSuccess: (e) => {},
+  showNotificationOfFailed: false,
+  setShowNotificationOfFailed: (e) => {},
 });
 
 export default function Layout({ children }: { children: React.ReactNode }) {
@@ -29,6 +33,11 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     refresh_token: "",
     expiration: 0,
   });
+
+  const [showNotificationOfFailed, setShowNotificationOfFailed] =
+    useState(false);
+  const [showNotificationOfSuccess, setShowNotificationOfSuccess] =
+    useState(false);
 
   const [refreshLog, setRefreshLog] = useState(false);
 
@@ -47,6 +56,10 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           setToken,
           refreshLog,
           setRefreshLog,
+          setShowNotificationOfFailed,
+          showNotificationOfFailed,
+          setShowNotificationOfSuccess,
+          showNotificationOfSuccess,
         }}
       >
         <Navbar />

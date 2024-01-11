@@ -9,7 +9,7 @@
   },
   "package": {
     "productName": "Cloudsync",
-    "version": "0.1.0"
+    "version": "1.0.0"
   },
   "tauri": {
     "allowlist": {
@@ -27,7 +27,6 @@
       },
       "dialog": {
         "all": true,
-        "ask": true,
         "confirm": true,
         "message": true,
         "open": true,
@@ -49,7 +48,7 @@
       },
       "externalBin": [],
       "icon": [
-        "icons/icon32.png",
+        "icons/icon40.png",
         "icons/icon128.png",
         "icons/icon256.png",
         "icons/icon.ico"

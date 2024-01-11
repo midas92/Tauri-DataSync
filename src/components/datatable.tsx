@@ -18,9 +18,9 @@ export default function Datatable(props: Datas) {
           <TableRow>
             <TableCell>ID</TableCell>
             <TableCell align="right">Sync Path</TableCell>
-            <TableCell align="right">Sync Type</TableCell>
-            <TableCell align="right">Cloud</TableCell>
-            <TableCell align="right">Time</TableCell>
+            <TableCell align="right" style={{minWidth:'100px'}}>Sync Type</TableCell>
+            <TableCell align="right" style={{minWidth:'75px'}}>Cloud</TableCell>
+            <TableCell align="right" style={{minWidth:'165px'}}>Time</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>

@@ -13,11 +13,18 @@ const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(
 });
 
 interface CustomizedSnackbarsProps {
+  message: Message;
   showNotification: boolean;
   onCloseNotification: () => void;
 }
 
+type Message = {
+  title : string,
+  content : string,
+}
+
 export default function CustomizedSnackbars({
+  message,
   showNotification,
   onCloseNotification,
 }: CustomizedSnackbarsProps) {
@@ -25,7 +32,7 @@ export default function CustomizedSnackbars({
     <Stack spacing={2} sx={{ width: '100%' }}>
       <Snackbar
         open={showNotification}
-        autoHideDuration={2000}
+        autoHideDuration={1500}
         onClose={onCloseNotification}
         anchorOrigin={{ vertical: 'top', horizontal: 'right' }} // Positioning the snackbar on the top right corner
       >
@@ -55,9 +62,9 @@ export default function CustomizedSnackbars({
               </div>
             ),
           }} severity="error" sx={{ width: '30vw', fontSize: '1.2rem', padding: '1rem',borderLeft: '4px solid #FF0000', backgroundColor: '#FDF7F7',color: 'black',}} >
-          <span style={{ fontWeight: 'bold' }}>Wrong Email</span>
+          <span style={{ fontWeight: 'bold' }}>{message.title}</span>
           <br />
-          <span style={{ fontSize: '0.9rem', color: 'grey' }}>Your Email is wrong, please try again</span>
+          <span style={{ fontSize: '0.9rem', color: 'grey' }}>{message?.content}</span>
         </Alert>
       </Snackbar>
     </Stack>

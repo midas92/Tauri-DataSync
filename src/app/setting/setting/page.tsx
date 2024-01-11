@@ -66,8 +66,15 @@ export const msToTimeString = (ms: number) => {
 };
 
 export default function Home() {
-  const { sync, setSync, intervalID, token, setToken } =
-    useContext(SyncContext);
+  const {
+    sync,
+    setSync,
+    intervalID,
+    token,
+    setToken,
+    setShowNotificationOfFailed,
+    setShowNotificationOfSuccess,
+  } = useContext(SyncContext);
   const [synctype, setSynctype] = useState("d");
   const [detail, setDetail] = useState(0);
   const [syncstatus, setSyncstatus] = useState(false);
@@ -117,26 +124,32 @@ export default function Home() {
         if (!isNull(directory)) {
           console.log("directory", directory);
           // download file on directory path
-          await invoke("google_drive_download", {
-            path: directory.toString(),
-            token: token?.access_token,
-            fileid: fileId,
-            filepath: false,
-          });
-          const cloudFileInfo = await getGoogleDriveFileInfo(fileId, token);
-          const filename = cloudFileInfo.name.split("--");
-          setfilePath(directory + "\\" + filename[0]);
-          localStorage.setItem("filePath", directory + "\\" + filename[0]);
-          const cloudModified = msToTimeString(parseInt(filename[1]));
-          await invoke("insert_log", {
-            drive: "google",
-            actionType: "manual",
-            create: nowLocalTime,
-            prev: cloudModified,
-            upload: "download",
-            path: directory + "\\" + filename[0],
-          });
-          console.log("create log to download");
+          try {
+            await invoke("google_drive_download", {
+              path: directory.toString(),
+              token: token?.access_token,
+              fileid: fileId,
+              filepath: false,
+            });
+            const cloudFileInfo = await getGoogleDriveFileInfo(fileId, token);
+            const filename = cloudFileInfo.name.split("--");
+            setfilePath(directory + "\\" + filename[0]);
+            localStorage.setItem("filePath", directory + "\\" + filename[0]);
+            const cloudModified = msToTimeString(parseInt(filename[1]));
+            await invoke("insert_log", {
+              drive: "google",
+              actionType: "manual",
+              create: nowLocalTime,
+              prev: cloudModified,
+              upload: "download",
+              path: directory + "\\" + filename[0],
+            });
+            setShowNotificationOfSuccess(true);
+            console.log("create log to download");
+          } catch (err) {
+            console.log(err);
+            setShowNotificationOfFailed(true);
+          }
         }
       } else {
         // if we have set file path.
@@ -158,31 +171,37 @@ export default function Home() {
           localStorage.setItem("filePath", file.toString());
           console.log(fileMetadata, "fimemetadata");
           if (isEmpty(fileId)) {
-            console.log("upload");
-            let res: any = await invoke("google_drive_upload", {
-              path: file,
-              token: token?.access_token,
-            });
-            console.log("res", res);
-            localStorage.setItem("fileId", res?.id);
-            setFileId(res?.id);
-            let res1: any = await invoke("google_drive_update_metadata", {
-              path: file.toString(),
-              token: token?.access_token,
-              fileId: res?.id,
-              mtime: fileMetadata?.toString(),
-            });
-            console.log("res1", res1);
-            setfilePath(file.toString());
-            invoke("insert_log", {
-              drive: "google",
-              actionType: "manual",
-              create: nowLocalTime,
-              prev: msToTimeString(fileMetadata || 0),
-              upload: "upload",
-              path: file.toString(),
-            });
-            console.log("create log to upload");
+            try {
+              console.log("upload");
+              let res: any = await invoke("google_drive_upload", {
+                path: file,
+                token: token?.access_token,
+              });
+              console.log("res", res);
+              localStorage.setItem("fileId", res?.id);
+              setFileId(res?.id);
+              let res1: any = await invoke("google_drive_update_metadata", {
+                path: file.toString(),
+                token: token?.access_token,
+                fileId: res?.id,
+                mtime: fileMetadata?.toString(),
+              });
+              console.log("res1", res1);
+              setfilePath(file.toString());
+              invoke("insert_log", {
+                drive: "google",
+                actionType: "manual",
+                create: nowLocalTime,
+                prev: msToTimeString(fileMetadata || 0),
+                upload: "upload",
+                path: file.toString(),
+              });
+              setShowNotificationOfSuccess(true);
+              console.log("create log to download");
+            } catch (err) {
+              console.log(err);
+              setShowNotificationOfFailed(true);
+            }
           } else {
             console.log("jijijijijijijijijij");
             const fileMetadata = await getLastModifiedDate(filePath);
@@ -194,49 +213,61 @@ export default function Home() {
             const cloudModified = msToTimeString(parseInt(filename[1]));
             if ((fileMetadata || 0) >= filename[1]) {
               //upload
-              console.log("upload update");
-              console.log("cloudModified", cloudModified);
-              let res: any = await invoke("google_drive_update_content", {
-                path: filePath,
-                token: token?.access_token,
-                fileid: fileId,
-              });
-              console.log("update_content", res);
+              try {
+                console.log("upload update");
+                console.log("cloudModified", cloudModified);
+                let res: any = await invoke("google_drive_update_content", {
+                  path: filePath,
+                  token: token?.access_token,
+                  fileid: fileId,
+                });
+                console.log("update_content", res);
 
-              let res1: any = await invoke("google_drive_update_metadata", {
-                path: file.toString(),
-                token: token?.access_token,
-                fileId: fileId,
-                mtime: fileMetadata?.toString(),
-              });
-              console.log("res1", res1);
-              invoke("insert_log", {
-                drive: "google",
-                actionType: "manual",
-                create: nowLocalTime,
-                prev: cloudModified,
-                upload: "upload",
-                path: file.toString(),
-              });
-              console.log("create log to upload");
+                let res1: any = await invoke("google_drive_update_metadata", {
+                  path: file.toString(),
+                  token: token?.access_token,
+                  fileId: fileId,
+                  mtime: fileMetadata?.toString(),
+                });
+                console.log("res1", res1);
+                invoke("insert_log", {
+                  drive: "google",
+                  actionType: "manual",
+                  create: nowLocalTime,
+                  prev: cloudModified,
+                  upload: "upload",
+                  path: file.toString(),
+                });
+                setShowNotificationOfSuccess(true);
+                console.log("create log to download");
+              } catch (err) {
+                console.log(err);
+                setShowNotificationOfFailed(true);
+              }
             } else {
               // download
-              console.log("file download");
-              await invoke("google_drive_download", {
-                path: file.toString(),
-                token: token?.access_token,
-                fileid: fileId,
-                filepath: true,
-              });
-              invoke("insert_log", {
-                drive: "google",
-                actionType: "manual",
-                create: nowLocalTime,
-                prev: cloudModified,
-                upload: "download",
-                path: file.toString(),
-              });
-              console.log("create log to download");
+              try {
+                console.log("file download");
+                await invoke("google_drive_download", {
+                  path: file.toString(),
+                  token: token?.access_token,
+                  fileid: fileId,
+                  filepath: true,
+                });
+                invoke("insert_log", {
+                  drive: "google",
+                  actionType: "manual",
+                  create: nowLocalTime,
+                  prev: cloudModified,
+                  upload: "download",
+                  path: file.toString(),
+                });
+                setShowNotificationOfSuccess(true);
+                console.log("create log to download");
+              } catch (err) {
+                console.log(err);
+                setShowNotificationOfFailed(true);
+              }
             }
           }
         }
@@ -297,7 +328,7 @@ export default function Home() {
               <h2 className="text-2xl font-bold mb-1">File path</h2>
               <p className="text-gray-700 mb-5 text-xm">Select a file path:</p>
               <p className="text-gray-700 mb-2 text-xs">path:</p>
-              <div className="m-2 self-stretch bg-white h-14 flex flex-row items-center justify-center py-0 px-4 box-border gap-[10px] text-base">
+              <div className="m-2 rounded border border-[#bdbdbd] self-stretch border-solid bg-white h-14 flex flex-row items-center justify-center py-0 px-4 box-border gap-[10px] text-base">
                 <input
                   className="flex-1 relative p-2.5  bg-white"
                   placeholder="Please select directory to sync cloud database"
@@ -305,9 +336,9 @@ export default function Home() {
                   value={filePath}
                   onChange={() => {}}
                 />
-                <button className="rounded bg-[#190482] text-gray-100 hover:bg-[#5c49bd] h-10 flex flex-row items-center justify-center py-0 px-4 box-border font-bold">
+                <button className="rounded-md bg-[#190482] text-gray-100 hover:bg-[#5c49bd] h-10 flex flex-row items-center justify-center py-2 px-4 box-border font-bold">
                   <label htmlFor="files" className="btn">
-                    Browse Files
+                    Browse
                   </label>
                   <input
                     id="files"

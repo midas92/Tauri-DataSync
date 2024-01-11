@@ -10,18 +10,32 @@ import { syncTypes } from "@/constants/sync";
 import { Sync, SyncDataType } from "@/types/sync";
 import { SyncContext } from "@/app/setting/layout";
 import { refreshAccessToken } from "@/services/auth";
+import Success from "@/components/notification/success";
+import Failed from "@/components/notification/failed";
+import { SYNC } from "@/constants/message";
 
 const Header: React.FC = () => {
-  let { sync, setIntervalID, token, setToken, setRefreshLog, refreshLog } =
-    useContext(SyncContext);
+  let {
+    sync,
+    setIntervalID,
+    token,
+    setToken,
+    setRefreshLog,
+    refreshLog,
+    showNotificationOfFailed,
+    setShowNotificationOfFailed,
+    showNotificationOfSuccess,
+    setShowNotificationOfSuccess,
+  } = useContext(SyncContext);
   let callSync = false;
   const [filePath, setfilePath] = useState("");
   const [fileId, setFileId] = useState("");
   const [syncbtnstatus, setSyncBtnStatus] = useState(false);
+  const [showNotificationOfRecommend, setShowNotificationOfRecommend] =
+    useState(false);
   const syncData = async (type = "Manual") => {
-    console.log("token", token);
     if (!isEmpty(filePath) && !isEmpty(fileId) && !isNull(token.access_token)) {
-      console.log("start sync")
+      console.log("start sync");
       await refreshAccessToken(token, setToken);
       const fileMetadata = await getLastModifiedDate(filePath);
       console.log(fileMetadata, "filemetadata");
@@ -34,49 +48,62 @@ const Header: React.FC = () => {
         //upload
         console.log("upload update");
         console.log("cloudModified", cloudModified);
-        let res: any = await invoke("google_drive_update_content", {
-          path: filePath,
-          token: token?.access_token,
-          fileid: fileId,
-        });
-        console.log("update_content", res);
-
-        let res1: any = await invoke("google_drive_update_metadata", {
-          path: filePath,
-          token: token?.access_token,
-          fileId: fileId,
-          mtime: fileMetadata?.toString(),
-        });
-        console.log("res1", res1);
-        await invoke("insert_log", {
-          drive: "google",
-          actionType: type,
-          create: nowLocalTime,
-          prev: cloudModified,
-          upload: "upload",
-          path: filePath,
-        });
-        console.log("create log to upload");
+        try {
+          let res: any = await invoke("google_drive_update_content", {
+            path: filePath,
+            token: token?.access_token,
+            fileid: fileId,
+          });
+          console.log("update_content", res);
+          let res1: any = await invoke("google_drive_update_metadata", {
+            path: filePath,
+            token: token?.access_token,
+            fileId: fileId,
+            mtime: fileMetadata?.toString(),
+          });
+          console.log("res1", res1);
+          await invoke("insert_log", {
+            drive: "google",
+            actionType: type,
+            create: nowLocalTime,
+            prev: cloudModified,
+            upload: "upload",
+            path: filePath,
+          });
+          setShowNotificationOfSuccess(true);
+          console.log("create log to upload");
+        } catch (err) {
+          console.log(err);
+          setShowNotificationOfFailed(true);
+        }
       } else {
         // download
-        console.log("file download");
-        await invoke("google_drive_download", {
-          path: filePath.toString(),
-          token: token?.access_token,
-          fileid: fileId,
-          filepath: true,
-        });
-        await invoke("insert_log", {
-          drive: "google",
-          actionType: type,
-          create: nowLocalTime,
-          prev: cloudModified,
-          upload: "download",
-          path: filePath,
-        });
-        console.log("create log to download");
+        try {
+          console.log("file download");
+          await invoke("google_drive_download", {
+            path: filePath.toString(),
+            token: token?.access_token,
+            fileid: fileId,
+            filepath: true,
+          });
+          await invoke("insert_log", {
+            drive: "google",
+            actionType: type,
+            create: nowLocalTime,
+            prev: cloudModified,
+            upload: "download",
+            path: filePath,
+          });
+          setShowNotificationOfSuccess(true);
+          console.log("create log to download");
+        } catch (err) {
+          console.log(err);
+          setShowNotificationOfFailed(true);
+        }
       }
       setRefreshLog(!refreshLog);
+    } else {
+      setShowNotificationOfRecommend(true);
     }
   };
   useEffect(() => {
@@ -84,11 +111,11 @@ const Header: React.FC = () => {
     setFileId(localStorage.getItem("fileId") || "");
     getSyncData();
   }, [sync]);
-  
+
   useEffect(() => {
     if (!isUndefined(token?.access_token) && !isEmpty(token?.access_token)) {
       if (token?.expiration > Date.now()) {
-        setSyncBtnStatus(true)
+        setSyncBtnStatus(true);
       }
     }
   }, [token]);
@@ -219,18 +246,35 @@ const Header: React.FC = () => {
   };
 
   return (
-    <div className="m-2 p-2 h-160 bg-gray-100 flex justify-end items-center pr-4">
-      <div className="m-4 p-2 h-300">
-        {/* <span className="m-2 p-2 text-[#190482] ">Last sync: 5 min ago</span> */}
-        <button
-          className="m-2 p-2 bg-[#190482] text-gray-100 hover:bg-[#5c49bd] font-bold py-2 px-4 rounded-md"
-          onClick={async () => await syncData()}
-          hidden = {!syncbtnstatus}
-        >
-          Sync Now
-        </button>
+    <>
+      <div className="m-2 p-2 h-160 bg-gray-100 flex justify-end items-center pr-4">
+        <div className="m-4 p-2 h-300">
+          {/* <span className="m-2 p-2 text-[#190482] ">Last sync: 5 min ago</span> */}
+          <button
+            className="m-2 p-2 bg-[#190482] text-gray-100 hover:bg-[#5c49bd] font-bold py-2 px-4 rounded-md"
+            onClick={async () => await syncData()}
+            hidden={!syncbtnstatus}
+          >
+            Sync Now
+          </button>
+        </div>
       </div>
-    </div>
+      <Success
+        message={SYNC.SUCCESS}
+        showNotification={showNotificationOfSuccess}
+        onCloseNotification={() => setShowNotificationOfSuccess(false)}
+      />
+      <Failed
+        message={SYNC.FAILED}
+        showNotification={showNotificationOfFailed}
+        onCloseNotification={() => setShowNotificationOfFailed(false)}
+      />
+      <Failed
+        message={SYNC.RECOMMEND}
+        showNotification={showNotificationOfRecommend}
+        onCloseNotification={() => setShowNotificationOfRecommend(false)}
+      />
+    </>
   );
 };
 

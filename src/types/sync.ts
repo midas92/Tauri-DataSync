@@ -39,13 +39,17 @@ interface SyncContextType {
   setSync: (e: boolean) => void;
   token: TokenType;
   setToken: (e: any) => void;
-  refreshLog: boolean,
-  setRefreshLog : (e : boolean)=>void
+  refreshLog: boolean;
+  setRefreshLog: (e: boolean) => void;
+  showNotificationOfSuccess: boolean;
+  setShowNotificationOfSuccess: (e: boolean) => void;
+  showNotificationOfFailed: boolean;
+  setShowNotificationOfFailed: (e: boolean) => void;
 }
 
 interface ModifiedTimeType {
-  nanos_since_epoch : number;
-  secs_since_epoch : number;
+  nanos_since_epoch: number;
+  secs_since_epoch: number;
 }
 export type {
   SyncDetail,
