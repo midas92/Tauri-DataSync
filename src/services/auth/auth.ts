@@ -60,6 +60,6 @@ export const googleSignIn = async (payload: string) => {
 
 export const signOut = () => {
   if (typeof window !== "undefined") {
-    localStorage.removeItem("token");
+    localStorage.clear();
   }
 };
